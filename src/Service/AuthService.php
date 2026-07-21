@@ -3,11 +3,13 @@
 namespace App\Service;
 
 use App\Entity\Utilisateur;
+use App\Entity\RefreshToken;
 use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+
 
 class AuthService
 {
@@ -17,8 +19,7 @@ class AuthService
         private readonly ValidatorInterface $validator,
         private readonly EntityManagerInterface $entityManager,
         private readonly JWTTokenManagerInterface $jwtTokenManager,
-    ) {
-    }
+    ) {}
 
     /**
      * Inscrit un nouvel utilisateur.
@@ -69,6 +70,47 @@ class AuthService
         return [
             'utilisateur' => $utilisateur,
             'accessToken' => $accessToken,
+        ];
+    }
+
+    /**
+     * Connecte un utilisateur existant.
+     *
+     * @return array{utilisateur: Utilisateur, accessToken: string, refreshToken: ?string}
+     *
+     * @throws \InvalidArgumentException si l'email ou le mot de passe est incorrect
+     *         (le Controller convertira cette exception en réponse HTTP 401)
+     */
+    public function connecter(string $email, string $motDePasse, bool $seSouvenirDeMoi): array
+    {
+        $utilisateur = $this->utilisateurRepository->findOneByEmail($email);
+
+        // Même message d'erreur qu'il s'agisse d'un email inconnu ou d'un mauvais mot de passe
+        // (évite de révéler si un email est inscrit ou non)
+        if ($utilisateur === null || !$this->passwordHasher->isPasswordValid($utilisateur, $motDePasse)) {
+            throw new \InvalidArgumentException('Email ou mot de passe incorrect.');
+        }
+
+        $accessToken = $this->jwtTokenManager->create($utilisateur);
+
+        $refreshTokenValue = null;
+
+        if ($seSouvenirDeMoi) {
+            $refreshTokenValue = bin2hex(random_bytes(64));
+
+            $refreshToken = new RefreshToken();
+            $refreshToken->setUtilisateur($utilisateur);
+            $refreshToken->setToken($refreshTokenValue);
+            $refreshToken->setExpiration(new \DateTimeImmutable('+30 days'));
+
+            $this->entityManager->persist($refreshToken);
+            $this->entityManager->flush();
+        }
+
+        return [
+            'utilisateur' => $utilisateur,
+            'accessToken' => $accessToken,
+            'refreshToken' => $refreshTokenValue,
         ];
     }
 }
