@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Utilisateur;
 use App\Entity\RefreshToken;
 use App\Repository\UtilisateurRepository;
+use App\Repository\RefreshTokenRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -15,6 +16,7 @@ class AuthService
 {
     public function __construct(
         private readonly UtilisateurRepository $utilisateurRepository,
+        private readonly RefreshTokenRepository $refreshTokenRepository,
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly ValidatorInterface $validator,
         private readonly EntityManagerInterface $entityManager,
@@ -112,5 +114,24 @@ class AuthService
             'accessToken' => $accessToken,
             'refreshToken' => $refreshTokenValue,
         ];
+    }
+
+    /**
+     * Déconnecte un utilisateur en supprimant son refresh token côté serveur.
+     * Si aucun refresh token n'est fourni (utilisateur non "souvenu"), il n'y a rien à faire côté serveur :
+     * la déconnexion se limite à la suppression des tokens côté client.
+     */
+    public function deconnecter(?string $refreshTokenValue): void
+    {
+        if ($refreshTokenValue === null) {
+            return;
+        }
+
+        $refreshToken = $this->refreshTokenRepository->findOneByToken($refreshTokenValue);
+
+        if ($refreshToken !== null) {
+            $this->entityManager->remove($refreshToken);
+            $this->entityManager->flush();
+        }
     }
 }

@@ -57,7 +57,7 @@ class AuthController extends AbstractController
             ],
         ], 201);
     }
-    
+
     /**
      Connexion
      */
@@ -102,5 +102,21 @@ class AuthController extends AbstractController
                 'email' => $utilisateur->getEmail(),
             ],
         ], 200);
+    }
+
+    /**
+     Déconnexion
+     */
+    #[Route('/api/deconnexion', name: 'api_deconnexion', methods: ['POST'])]
+    public function deconnexion(Request $request): JsonResponse
+    {
+        $donnees = json_decode($request->getContent(), true);
+
+        // Le refreshToken est optionnel : un utilisateur sans "se souvenir de moi" n'en a pas
+        $refreshToken = $donnees['refreshToken'] ?? null;
+
+        $this->authService->deconnecter($refreshToken);
+
+        return new JsonResponse(['message' => 'Déconnexion réussie.'], 200);
     }
 }
