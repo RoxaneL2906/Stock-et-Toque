@@ -10,10 +10,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
 #[ORM\Table(name: 'utilisateur')]
 #[ORM\HasLifecycleCallbacks]
+#[Assert\Callback(callback: 'validateConfirmationMotDePasse', groups: ['inscription', 'changement_mdp'])]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -53,6 +55,13 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         groups: ['inscription', 'changement_mdp']
     )]
     private ?string $plainPassword = null;
+
+    /**
+     * Champ non persisté, utilisé uniquement pour vérifier que la confirmation
+     * correspond au mot de passe saisi. Jamais stocké en base.
+     */
+    #[Assert\NotBlank(message: 'La confirmation du mot de passe est obligatoire.', groups: ['inscription', 'changement_mdp'])]
+    private ?string $confirmationMotDePasse = null;
 
     #[ORM\Column(name: 'photo_profil', length: 255, nullable: true)]
     private ?string $photoProfil = null;
@@ -206,12 +215,36 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getConfirmationMotDePasse(): ?string
+    {
+        return $this->confirmationMotDePasse;
+    }
+
+    public function setConfirmationMotDePasse(?string $confirmationMotDePasse): static
+    {
+        $this->confirmationMotDePasse = $confirmationMotDePasse;
+        return $this;
+    }
+
     /**
      * Efface les données sensibles temporaires (ex : plainPassword) après authentification.
      */
     public function eraseCredentials(): void
     {
         $this->plainPassword = null;
+    }
+
+    /**
+     * Vérifie que le mot de passe et sa confirmation correspondent.
+     * Appelée automatiquement par le Validator grâce à #[Assert\Callback].
+     */
+    public function validateConfirmationMotDePasse(ExecutionContextInterface $context): void
+    {
+        if ($this->plainPassword !== null && $this->plainPassword !== $this->confirmationMotDePasse) {
+            $context->buildViolation('Les mots de passe ne correspondent pas.')
+                ->atPath('confirmationMotDePasse')
+                ->addViolation();
+        }
     }
 
     public function getPhotoProfil(): ?string

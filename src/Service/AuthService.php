@@ -1,0 +1,74 @@
+<?php
+
+namespace App\Service;
+
+use App\Entity\Utilisateur;
+use App\Repository\UtilisateurRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
+class AuthService
+{
+    public function __construct(
+        private readonly UtilisateurRepository $utilisateurRepository,
+        private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly ValidatorInterface $validator,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly JWTTokenManagerInterface $jwtTokenManager,
+    ) {
+    }
+
+    /**
+     * Inscrit un nouvel utilisateur.
+     *
+     * @return array{utilisateur: Utilisateur, accessToken: string} Les infos nécessaires
+     *         pour connecter automatiquement l'utilisateur juste après.
+     *
+     * @throws \InvalidArgumentException si l'email existe déjà ou si les données sont invalides
+     *         (le Controller convertira ces exceptions en réponses HTTP 422)
+     */
+    public function inscrire(string $prenom, string $nom, string $email, string $motDePasse, string $confirmationMotDePasse): array
+    {
+        // Email unique
+        if ($this->utilisateurRepository->findOneByEmail($email) !== null) {
+            throw new \InvalidArgumentException('Un compte existe déjà avec cette adresse email.');
+        }
+
+        $utilisateur = new Utilisateur();
+        $utilisateur->setPrenom($prenom);
+        $utilisateur->setNom($nom);
+        $utilisateur->setEmail($email);
+        $utilisateur->setRole(['ROLE_USER']);
+        $utilisateur->setPlainPassword($motDePasse);
+        $utilisateur->setConfirmationMotDePasse($confirmationMotDePasse);
+
+        // Règles de complexité + correspondance mots de passe
+        $violations = $this->validator->validate($utilisateur, groups: ['inscription']);
+        if (count($violations) > 0) {
+            $messages = [];
+            foreach ($violations as $violation) {
+                $messages[] = $violation->getMessage();
+            }
+            throw new \InvalidArgumentException(implode(' ', $messages));
+        }
+
+        // Hachage du mot de passe avant stockage (jamais en clair en base)
+        $utilisateur->setMotDePasse(
+            $this->passwordHasher->hashPassword($utilisateur, $motDePasse)
+        );
+        $utilisateur->eraseCredentials();
+
+        $this->entityManager->persist($utilisateur);
+        $this->entityManager->flush();
+
+        // Connexion automatique après inscription -> génération de l'access token
+        $accessToken = $this->jwtTokenManager->create($utilisateur);
+
+        return [
+            'utilisateur' => $utilisateur,
+            'accessToken' => $accessToken,
+        ];
+    }
+}
