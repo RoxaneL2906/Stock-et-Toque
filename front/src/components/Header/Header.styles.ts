@@ -4,6 +4,9 @@ export const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#374151',
+    width: '100%',
   },
   logo: {
     width: 60,
@@ -19,7 +22,8 @@ export const styles = StyleSheet.create({
     color: '#22C55E',
   },
   sousTitre: {
-    fontSize: 14,
+    fontSize: 13,
+    fontStyle: 'italic',
     color: '#D9D9D9',
     textAlign: 'center',
     marginTop: 4,
