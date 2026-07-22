@@ -9,7 +9,7 @@ function Header() {
         style={styles.logo}
       />
       <Text style={styles.titre}>
-        Stock <Text style={styles.titreAccent}>&</Text> Toque
+        Stock <Text style={styles.titreAccent}>& Toque</Text>
       </Text>
       <Text style={styles.sousTitre}>
         Parce que bien manger ne devrait pas être une corvée

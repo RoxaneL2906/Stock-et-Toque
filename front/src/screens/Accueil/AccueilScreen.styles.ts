@@ -1,12 +1,15 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-  container: {
+  ecranComplet: {
     flex: 1,
     backgroundColor: '#111827',
     width: '100%',
     maxWidth: 480,
     alignSelf: 'center',
+  },
+  container: {
+    flex: 1,
   },
   contenu: {
     padding: 20,
@@ -22,20 +25,7 @@ export const styles = StyleSheet.create({
   boutonsColonne: {
     alignItems: 'center',
     marginBottom: 24,
-  },
-  bouton: {
-    backgroundColor: '#22C55E',
-    borderRadius: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 18,
-    marginVertical: 6,
-    width: 200,
-    alignItems: 'center',
-  },
-  boutonTexte: {
-    color: '#000000',
-    fontWeight: 'bold',
-    fontSize: 13,
+    gap: 12,
   },
   cardsGrid: {
     flexDirection: 'row',
