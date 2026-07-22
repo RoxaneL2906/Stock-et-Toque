@@ -119,4 +119,59 @@ class AuthController extends AbstractController
 
         return new JsonResponse(['message' => 'Déconnexion réussie.'], 200);
     }
+
+    /**
+     Demande de réinitialisation du mot de passe
+     */
+    #[Route('/api/mot-de-passe-oublie', name: 'api_mot_de_passe_oublie', methods: ['POST'])]
+    public function motDePasseOublie(Request $request): JsonResponse
+    {
+        $donnees = json_decode($request->getContent(), true);
+
+        if (empty($donnees['email'])) {
+            return new JsonResponse(['message' => "Le champ 'email' est obligatoire."], 422);
+        }
+
+        $this->authService->demanderReinitialisation($donnees['email']);
+
+        // Message générique : ne révèle jamais si l'email existe ou non en base
+        return new JsonResponse(
+            ['message' => 'Si cet email est associé à un compte, un lien de réinitialisation a été envoyé.'],
+            200
+        );
+    }
+
+    /**
+     Réinitialisation du mot de passe
+     */
+    #[Route('/api/reinitialiser-mot-de-passe', name: 'api_reinitialiser_mot_de_passe', methods: ['POST'])]
+    public function reinitialiserMotDePasse(Request $request): JsonResponse
+    {
+        $donnees = json_decode($request->getContent(), true);
+
+        $champsRequis = ['token', 'nouveauMotDePasse', 'confirmationNouveauMotDePasse'];
+        foreach ($champsRequis as $champ) {
+            if (empty($donnees[$champ])) {
+                return new JsonResponse(
+                    ['message' => "Le champ '$champ' est obligatoire."],
+                    422
+                );
+            }
+        }
+
+        try {
+            $this->authService->reinitialiserMotDePasse(
+                token: $donnees['token'],
+                nouveauMotDePasse: $donnees['nouveauMotDePasse'],
+                confirmationNouveauMotDePasse: $donnees['confirmationNouveauMotDePasse'],
+            );
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 422);
+        }
+
+        return new JsonResponse(
+            ['message' => 'Votre mot de passe a bien été réinitialisé.'],
+            200
+        );
+    }
 }

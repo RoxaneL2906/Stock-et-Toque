@@ -69,6 +69,12 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(name: 'date_inscription', type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $dateInscription = null;
 
+    #[ORM\Column(name: 'token_reinitialisation', length: 255, nullable: true)]
+    private ?string $tokenReinitialisation = null;
+
+    #[ORM\Column(name: 'token_reinitialisation_expiration', type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $tokenReinitialisationExpiration = null;
+
     /**
      * Rôles Symfony Security : ROLE_USER, ROLE_ADMIN, ROLE_SUPER_ADMIN.
      */
@@ -261,6 +267,28 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function getDateInscription(): ?\DateTimeImmutable
     {
         return $this->dateInscription;
+    }
+
+    public function getTokenReinitialisation(): ?string
+    {
+        return $this->tokenReinitialisation;
+    }
+
+    public function setTokenReinitialisation(?string $tokenReinitialisation): static
+    {
+        $this->tokenReinitialisation = $tokenReinitialisation;
+        return $this;
+    }
+
+    public function getTokenReinitialisationExpiration(): ?\DateTimeImmutable
+    {
+        return $this->tokenReinitialisationExpiration;
+    }
+
+    public function setTokenReinitialisationExpiration(?\DateTimeImmutable $tokenReinitialisationExpiration): static
+    {
+        $this->tokenReinitialisationExpiration = $tokenReinitialisationExpiration;
+        return $this;
     }
 
     public function isQuestionnaireComplete(): bool

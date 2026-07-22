@@ -1,6 +1,6 @@
 security:
     password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: "auto"
 
     # On utilise l'entité Utilisateur comme source des comptes, en s'authentifiant par email
     providers:
@@ -16,7 +16,7 @@ security:
 
         # Route d'inscription et de connexion : accessibles sans être authentifié
         api_public:
-            pattern: ^/api/(inscription|connexion)
+            pattern: ^/api/(inscription|connexion|mot-de-passe-oublie|reinitialiser-mot-de-passe)
             stateless: true
             provider: app_utilisateur_provider
 
@@ -32,7 +32,10 @@ security:
             provider: app_utilisateur_provider
 
     access_control:
-        - { path: ^/api/(inscription|connexion), roles: PUBLIC_ACCESS }
+        - {
+              path: ^/api/(inscription|connexion|mot-de-passe-oublie|reinitialiser-mot-de-passe),
+              roles: PUBLIC_ACCESS,
+          }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

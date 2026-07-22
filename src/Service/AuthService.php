@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Mailer\MailerInterface;
 
 
 class AuthService
@@ -21,6 +22,7 @@ class AuthService
         private readonly ValidatorInterface $validator,
         private readonly EntityManagerInterface $entityManager,
         private readonly JWTTokenManagerInterface $jwtTokenManager,
+        private readonly MailerInterface $mailer,
     ) {}
 
     /**
@@ -133,5 +135,78 @@ class AuthService
             $this->entityManager->remove($refreshToken);
             $this->entityManager->flush();
         }
+    }
+
+    /**
+     * Demande une réinitialisation de mot de passe : génère un token temporaire
+     * et envoie un email contenant le lien de réinitialisation.
+     *
+     * Ne révèle jamais si l'email existe ou non en base (même comportement dans les deux cas),
+     * pour éviter qu'un tiers puisse deviner quels emails sont inscrits.
+     */
+    public function demanderReinitialisation(string $email): void
+    {
+        $utilisateur = $this->utilisateurRepository->findOneByEmail($email);
+
+        if ($utilisateur === null) {
+            return;
+        }
+
+        $token = bin2hex(random_bytes(32));
+
+        $utilisateur->setTokenReinitialisation($token);
+        $utilisateur->setTokenReinitialisationExpiration(new \DateTimeImmutable('+1 hour'));
+
+        $this->entityManager->flush();
+
+        $message = (new \Symfony\Component\Mime\Email())
+            ->from('no-reply@stocketoque.fr')
+            ->to($utilisateur->getEmail())
+            ->subject('Réinitialisation de votre mot de passe - Stock & Toque')
+            ->text("Voici votre code de réinitialisation : {$token}\n\nCe code est valable 1 heure.");
+
+        $this->mailer->send($message);
+    }
+
+    /**
+     * Réinitialise le mot de passe à partir d'un token valide et non expiré.
+     *
+     * @throws \InvalidArgumentException si le token est invalide/expiré ou si les données sont invalides
+     *         (le Controller convertira ces exceptions en réponses HTTP 422)
+     */
+    public function reinitialiserMotDePasse(string $token, string $nouveauMotDePasse, string $confirmationNouveauMotDePasse): void
+    {
+        $utilisateur = $this->utilisateurRepository->findOneByTokenReinitialisation($token);
+
+        if (
+            $utilisateur === null
+            || $utilisateur->getTokenReinitialisationExpiration() === null
+            || $utilisateur->getTokenReinitialisationExpiration() < new \DateTimeImmutable()
+        ) {
+            throw new \InvalidArgumentException('Ce lien de réinitialisation est invalide ou a expiré.');
+        }
+
+        $utilisateur->setPlainPassword($nouveauMotDePasse);
+        $utilisateur->setConfirmationMotDePasse($confirmationNouveauMotDePasse);
+
+        $violations = $this->validator->validate($utilisateur, groups: ['changement_mdp']);
+        if (count($violations) > 0) {
+            $messages = [];
+            foreach ($violations as $violation) {
+                $messages[] = $violation->getMessage();
+            }
+            throw new \InvalidArgumentException(implode(' ', $messages));
+        }
+
+        $utilisateur->setMotDePasse(
+            $this->passwordHasher->hashPassword($utilisateur, $nouveauMotDePasse)
+        );
+        $utilisateur->eraseCredentials();
+
+        // Token à usage unique : on l'invalide après utilisation
+        $utilisateur->setTokenReinitialisation(null);
+        $utilisateur->setTokenReinitialisationExpiration(null);
+
+        $this->entityManager->flush();
     }
 }

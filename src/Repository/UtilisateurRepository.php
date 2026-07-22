@@ -40,4 +40,13 @@ class UtilisateurRepository extends ServiceEntityRepository implements PasswordU
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    public function findOneByTokenReinitialisation(string $token): ?Utilisateur
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.tokenReinitialisation = :token')
+            ->setParameter('token', $token)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }
