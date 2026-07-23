@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class AuthController extends AbstractController
 {
@@ -15,7 +16,7 @@ class AuthController extends AbstractController
     ) {}
 
     /**
-     Création de compte
+ Création de compte
      */
     #[Route('/api/inscription', name: 'api_inscription', methods: ['POST'])]
     public function inscription(Request $request): JsonResponse
@@ -47,8 +48,7 @@ class AuthController extends AbstractController
 
         $utilisateur = $resultat['utilisateur'];
 
-        return new JsonResponse([
-            'accessToken' => $resultat['accessToken'],
+        $response = new JsonResponse([
             'utilisateur' => [
                 'id' => $utilisateur->getId(),
                 'prenom' => $utilisateur->getPrenom(),
@@ -56,10 +56,22 @@ class AuthController extends AbstractController
                 'email' => $utilisateur->getEmail(),
             ],
         ], 201);
+
+        // Connexion automatique après inscription : cookie httpOnly avec l'access token
+        $response->headers->setCookie(
+            Cookie::create('access_token')
+                ->withValue($resultat['accessToken'])
+                ->withHttpOnly(true)
+                ->withSecure(true)
+                ->withSameSite('lax')
+                ->withExpires(new \DateTimeImmutable('+15 minutes'))
+        );
+
+        return $response;
     }
 
     /**
-     Connexion
+     * Connexion
      */
     #[Route('/api/connexion', name: 'api_connexion', methods: ['POST'])]
     public function connexion(Request $request): JsonResponse
@@ -92,9 +104,7 @@ class AuthController extends AbstractController
 
         $utilisateur = $resultat['utilisateur'];
 
-        return new JsonResponse([
-            'accessToken' => $resultat['accessToken'],
-            'refreshToken' => $resultat['refreshToken'],
+        $response = new JsonResponse([
             'utilisateur' => [
                 'id' => $utilisateur->getId(),
                 'prenom' => $utilisateur->getPrenom(),
@@ -102,22 +112,78 @@ class AuthController extends AbstractController
                 'email' => $utilisateur->getEmail(),
             ],
         ], 200);
+
+        // Access token : cookie httpOnly, expire avec le token (15 minutes)
+        $response->headers->setCookie(
+            Cookie::create('access_token')
+                ->withValue($resultat['accessToken'])
+                ->withHttpOnly(true)
+                ->withSecure(true)
+                ->withSameSite('lax')
+                ->withExpires(new \DateTimeImmutable('+15 minutes'))
+        );
+
+        // Refresh token : uniquement si "se souvenir de moi" est activé
+        if ($resultat['refreshToken'] !== null) {
+            $response->headers->setCookie(
+                Cookie::create('refresh_token')
+                    ->withValue($resultat['refreshToken'])
+                    ->withHttpOnly(true)
+                    ->withSecure(true)
+                    ->withSameSite('lax')
+                    ->withExpires(new \DateTimeImmutable('+30 days'))
+            );
+        }
+
+        return $response;
     }
 
     /**
-     Déconnexion
+ Déconnexion
      */
     #[Route('/api/deconnexion', name: 'api_deconnexion', methods: ['POST'])]
     public function deconnexion(Request $request): JsonResponse
     {
-        $donnees = json_decode($request->getContent(), true);
-
-        // Le refreshToken est optionnel : un utilisateur sans "se souvenir de moi" n'en a pas
-        $refreshToken = $donnees['refreshToken'] ?? null;
+        // Le refresh token vient maintenant du cookie, plus du corps JSON
+        $refreshToken = $request->cookies->get('refresh_token');
 
         $this->authService->deconnecter($refreshToken);
 
-        return new JsonResponse(['message' => 'Déconnexion réussie.'], 200);
+        $response = new JsonResponse(['message' => 'Déconnexion réussie.'], 200);
+
+        // Suppression des cookies côté client (expiration dans le passé)
+        $response->headers->clearCookie('access_token', '/', null, true, true, 'lax');
+        $response->headers->clearCookie('refresh_token', '/', null, true, true, 'lax');
+
+        return $response;
+    }
+
+    /**
+ Rafraîchissement de l'access token
+     */
+    #[Route('/api/rafraichir-token', name: 'api_rafraichir_token', methods: ['POST'])]
+    public function rafraichirToken(Request $request): JsonResponse
+    {
+        $refreshToken = $request->cookies->get('refresh_token');
+
+        try {
+            $nouvelAccessToken = $this->authService->rafraichirToken($refreshToken);
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 401);
+        }
+
+        $response = new JsonResponse(['message' => 'Token rafraîchi.'], 200);
+
+        $response->headers->setCookie(
+            Cookie::create('access_token')
+                ->withValue($nouvelAccessToken)
+                ->withHttpOnly(true)
+                ->withSecure(true)
+                ->withSameSite('lax')
+                ->withExpires(new \DateTimeImmutable('+15 minutes'))
+        );
+
+        return $response;
     }
 
     /**

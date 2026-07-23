@@ -16,7 +16,7 @@ security:
 
         # Route d'inscription et de connexion : accessibles sans être authentifié
         api_public:
-            pattern: ^/api/(inscription|connexion|mot-de-passe-oublie|reinitialiser-mot-de-passe)
+            pattern: ^/api/(inscription|connexion|mot-de-passe-oublie|reinitialiser-mot-de-passe|rafraichir-token)
             stateless: true
             provider: app_utilisateur_provider
 
@@ -33,7 +33,7 @@ security:
 
     access_control:
         - {
-              path: ^/api/(inscription|connexion|mot-de-passe-oublie|reinitialiser-mot-de-passe),
+              path: ^/api/(inscription|connexion|mot-de-passe-oublie|reinitialiser-mot-de-passe|rafraichir-token),
               roles: PUBLIC_ACCESS,
           }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

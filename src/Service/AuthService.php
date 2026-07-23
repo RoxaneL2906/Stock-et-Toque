@@ -138,6 +138,27 @@ class AuthService
     }
 
     /**
+     * Génère un nouvel access token à partir d'un refresh token valide.
+     *
+     * @throws \InvalidArgumentException si le refresh token est invalide ou expiré
+     *         (le Controller convertira cette exception en réponse HTTP 401)
+     */
+    public function rafraichirToken(?string $refreshTokenValue): string
+    {
+        if ($refreshTokenValue === null) {
+            throw new \InvalidArgumentException('Aucun refresh token fourni.');
+        }
+
+        $refreshToken = $this->refreshTokenRepository->findOneByToken($refreshTokenValue);
+
+        if ($refreshToken === null || $refreshToken->getExpiration() < new \DateTimeImmutable()) {
+            throw new \InvalidArgumentException('Refresh token invalide ou expiré.');
+        }
+
+        return $this->jwtTokenManager->create($refreshToken->getUtilisateur());
+    }
+
+    /**
      * Demande une réinitialisation de mot de passe : génère un token temporaire
      * et envoie un email contenant le lien de réinitialisation.
      *
