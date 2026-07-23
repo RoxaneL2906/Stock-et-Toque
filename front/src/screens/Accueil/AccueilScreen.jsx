@@ -31,10 +31,10 @@ function AccueilScreen({ onNaviguer }) {
         </div>
 
         <div className="accueil-cards-grid" ref={fonctionnalitesRef}>
-          <FeatureCard icone={iconeRecettes} titre="Recettes" description={'Privées & publiques.\nFiltrées par préférences'} couleur="#22C55E" />
-          <FeatureCard icone={iconePlanning} titre="Planning" description={'7 jours, midi & soir.\nSuggestions'} couleur="#F97316" />
-          <FeatureCard icone={iconeStock} titre="Stock" description={'Frigo & Placard.\nAlertes DLC/DDM'} couleur="#60A5FA" />
-          <FeatureCard icone={iconeCourses} titre="Courses" description={'Manuelle ou auto.\nDepuis les recettes'} couleur="#A78BFA" />
+          <FeatureCard icone={iconeRecettes} titre="Recettes" description={'Privées & publiques\nFiltrées par préférences'} couleur="#22C55E" />
+          <FeatureCard icone={iconePlanning} titre="Planning" description={'7 jours, midi & soir\nSuggestions'} couleur="#F97316" />
+          <FeatureCard icone={iconeStock} titre="Stock" description={'Frigo & Placard\nAlertes DLC/DDM'} couleur="#60A5FA" />
+          <FeatureCard icone={iconeCourses} titre="Courses" description={'Manuelle ou auto\nDepuis les recettes'} couleur="#A78BFA" />
         </div>
 
         <PrimaryButton texte="S'inscrire →" onClick={() => onNaviguer('inscription')} />

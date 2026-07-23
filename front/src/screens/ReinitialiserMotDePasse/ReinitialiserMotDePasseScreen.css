@@ -21,7 +21,14 @@
   color: var(--couleur-vert);
   font-size: 18px;
   margin-top: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+}
+
+.sous-titre {
+  font-size: 13px;
+  color: var(--couleur-texte-clair);
+  text-align: center;
+  margin-bottom: 24px;
 }
 
 .texte-aide {
@@ -36,15 +43,10 @@
   color: var(--couleur-bleu);
 }
 
-.ligne-lien {
+.lien-retour {
   font-size: 13px;
   color: var(--couleur-texte-clair);
-  margin-top: 16px;
-}
-
-.lien-vert {
-  color: var(--couleur-vert);
-  font-weight: bold;
+  margin-top: 20px;
   cursor: pointer;
 }
 

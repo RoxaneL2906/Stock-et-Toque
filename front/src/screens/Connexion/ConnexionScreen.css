@@ -66,3 +66,17 @@
   font-weight: bold;
   cursor: pointer;
 }
+
+.formulaire {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.message-erreur {
+  color: var(--couleur-rouge);
+  font-size: 13px;
+  margin-bottom: 16px;
+  text-align: center;
+}
