@@ -1,0 +1,27 @@
+.form-input-container {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.form-input-label {
+  display: block;
+  font-size: 13px;
+  color: #FFFFFF;
+  margin-bottom: 6px;
+}
+
+.form-input {
+  width: 100%;
+  background-color: var(--couleur-fond-input);
+  border: 1px solid var(--couleur-bordure-input);
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: #FFFFFF;
+  font-size: 14px;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--couleur-bordure-input-focus);
+  border-width: 1.5px;
+}

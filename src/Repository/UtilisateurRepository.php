@@ -5,7 +5,7 @@ namespace App\Repository;
 use App\Entity\Utilisateur;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\PasswordHasher\Hasher\PasswordUpgraderInterface;
+use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
 /**
  * @extends ServiceEntityRepository<Utilisateur>
@@ -37,6 +37,15 @@ class UtilisateurRepository extends ServiceEntityRepository implements PasswordU
         return $this->createQueryBuilder('u')
             ->andWhere('u.email = :email')
             ->setParameter('email', $email)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findOneByTokenReinitialisation(string $token): ?Utilisateur
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.tokenReinitialisation = :token')
+            ->setParameter('token', $token)
             ->getQuery()
             ->getOneOrNullResult();
     }

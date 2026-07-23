@@ -1,0 +1,82 @@
+.ecran-complet {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--couleur-fond);
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.ecran-contenu {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.titre-vert {
+  color: var(--couleur-vert);
+  font-size: 18px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.ligne-mot-de-passe {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+.lien-oublie {
+  font-size: 13px;
+  color: var(--couleur-orange);
+  cursor: pointer;
+}
+
+.ligne-souvenir {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 8px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: var(--couleur-texte-clair);
+  cursor: pointer;
+}
+
+.bienvenue {
+  font-size: 14px;
+  color: var(--couleur-texte-clair);
+  margin-bottom: 20px;
+}
+
+.ligne-lien {
+  font-size: 13px;
+  color: var(--couleur-texte-clair);
+  margin-top: 16px;
+}
+
+.lien-vert {
+  color: var(--couleur-vert);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.formulaire {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.message-erreur {
+  color: var(--couleur-rouge);
+  font-size: 13px;
+  margin-bottom: 16px;
+  text-align: center;
+}
