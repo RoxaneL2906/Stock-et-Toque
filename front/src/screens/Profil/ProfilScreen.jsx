@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Camera, User, KeyRound, Utensils, Bell, Moon, X, BookMarked, Heart } from 'lucide-react';
 import HeaderAppli from '../../components/HeaderAppli/HeaderAppli';
 import FooterNav from '../../components/FooterNav/FooterNav';
@@ -6,17 +5,30 @@ import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import NavigationChevron from '../../components/NavigationChevron/NavigationChevron';
 import ToggleSwitch from '../../components/ToggleSwitch/ToggleSwitch';
 import './ProfilScreen.css';
+import { useState, useEffect } from 'react';
+import { recupererProfil } from '../../services/profilApi';
+
 
 function ProfilScreen({ onNaviguer }) {
   const [notificationsActives, setNotificationsActives] = useState(true);
   const [modeNuitActif, setModeNuitActif] = useState(true);
 
-  // Données statiques temporaires, à remplacer par l'appel API
-  const utilisateur = {
-    prenom: 'Prénom',
-    nom: 'NOM',
-    email: 'mail@gmail.com',
-  };
+  const [utilisateur, setUtilisateur] = useState(null);
+  const [erreur, setErreur] = useState('');
+
+  useEffect(() => {
+    recupererProfil()
+      .then((donnees) => setUtilisateur(donnees))
+      .catch((err) => setErreur(err.message));
+  }, []);
+
+  if (erreur) {
+    return <p style={{ color: '#EF4444' }}>{erreur}</p>;
+  }
+
+  if (!utilisateur) {
+    return <p style={{ color: '#fff' }}>Chargement...</p>;
+  }
 
   const initiales = `${utilisateur.prenom.charAt(0)}.${utilisateur.nom.charAt(0)}`;
 

@@ -23,6 +23,6 @@ class ProfilController extends AbstractController
 
         $profil = $this->profilService->consulterProfil($utilisateur);
 
-        return new JsonResponse(['utilisateur' => $profil], 200);
+        return new JsonResponse($profil, 200);
     }
 }
