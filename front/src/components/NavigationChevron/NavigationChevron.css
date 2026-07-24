@@ -1,0 +1,21 @@
+.navigation-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.navigation-chevron-gauche {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navigation-chevron-texte {
+  color: #FFFFFF;
+  font-size: 14px;
+}
