@@ -1,0 +1,92 @@
+.profil-avatar-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 12px;
+  margin-bottom: 20px;
+}
+
+.profil-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #374151;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-size: 22px;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.profil-avatar-camera {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--couleur-vert);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.profil-nom {
+  color: #FFFFFF;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.profil-email {
+  color: var(--couleur-texte-clair);
+  font-size: 13px;
+}
+
+.profil-section {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.profil-section-titre {
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.profil-cartes-grid {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.profil-carte {
+  flex: 1;
+  background-color: #1F2937;
+  border: none;
+  border-radius: 8px;
+  padding: 16px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: #FFFFFF;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.profil-supprimer-compte {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: #EF4444;
+  padding: 10px 0;
+  cursor: pointer;
+}

@@ -1,9 +1,14 @@
 import './FormInput.css';
 
-function FormInput({ label, value, onChange, type = 'text' }) {
+function FormInput({ label, value, onChange, type = 'text', modifie = false }) {
   return (
     <div className="form-input-container">
-      {label && <label className="form-input-label">{label}</label>}
+      {label && (
+        <label className="form-input-label">
+          {label}
+          {modifie && <span className="form-input-point-modif" />}
+        </label>
+      )}
       <input
         className="form-input"
         type={type}

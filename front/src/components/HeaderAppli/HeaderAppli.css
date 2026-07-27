@@ -1,0 +1,33 @@
+.header-appli {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #374151;
+  width: 100%;
+}
+
+.header-appli-gauche {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-appli-logo {
+  width: 32px;
+  height: 32px;
+}
+
+.header-appli-titre {
+  font-size: 18px;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.header-appli-titre-accent {
+  color: var(--couleur-vert);
+}
+
+.header-appli-icone-notif {
+  color: #FFFFFF;
+}

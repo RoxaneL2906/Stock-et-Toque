@@ -1,13 +1,17 @@
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-async function appelApi(endpoint, donnees) {
-  const reponse = await fetch(`${BASE_URL}${endpoint}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+async function appelApi(endpoint, donnees = null, methode = 'POST') {
+  const options = {
+    method: methode,
     credentials: 'include',
-    body: JSON.stringify(donnees),
-  });
+  };
 
+  if (donnees !== null) {
+    options.headers = { 'Content-Type': 'application/json' };
+    options.body = JSON.stringify(donnees);
+  }
+
+  const reponse = await fetch(`${BASE_URL}${endpoint}`, options);
   const resultat = await reponse.json();
 
   if (!reponse.ok) {
@@ -40,3 +44,5 @@ export function reinitialiserMotDePasse(donnees) {
 export function rafraichirToken() {
   return appelApi('/rafraichir-token', {});
 }
+
+export { appelApi };

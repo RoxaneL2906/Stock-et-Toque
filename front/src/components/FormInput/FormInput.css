@@ -25,3 +25,13 @@
   border-color: var(--couleur-bordure-input-focus);
   border-width: 1.5px;
 }
+
+.form-input-point-modif {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--couleur-orange);
+  margin-left: 6px;
+  vertical-align: middle;
+}
