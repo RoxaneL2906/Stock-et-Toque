@@ -36,7 +36,7 @@ class ProfilService
     }
 
     /**
-     * Modifie le prénom et le nom (US 2.2 - CA1). Aucune confirmation par mot de passe nécessaire.
+     * Modifie le prénom et le nom. Aucune confirmation par mot de passe nécessaire.
      *
      * @throws \InvalidArgumentException si le prénom ou le nom est vide
      *         (le Controller convertira cette exception en réponse HTTP 422)
@@ -59,7 +59,7 @@ class ProfilService
     }
 
     /**
-     * Modifie l'email (US 2.2 - CA2/CA3). Nécessite le mot de passe actuel pour confirmation.
+     * Modifie l'email. Nécessite le mot de passe actuel pour confirmation.
      * Invalide les refresh tokens existants : l'utilisateur devra se reconnecter.
      *
      * @throws \InvalidArgumentException si le mot de passe actuel est incorrect,
@@ -94,7 +94,7 @@ class ProfilService
     }
 
     /**
-     * Modifie le mot de passe (US 2.2 - CA4). Nécessite l'ancien mot de passe.
+     * Modifie le mot de passe. Nécessite l'ancien mot de passe.
      * Invalide les refresh tokens existants : l'utilisateur devra se reconnecter.
      * Envoie un email de confirmation une fois le changement effectué.
      *
@@ -152,5 +152,35 @@ class ProfilService
         foreach ($utilisateur->getRefreshTokens() as $refreshToken) {
             $this->entityManager->remove($refreshToken);
         }
+    }
+
+    
+    /**
+     * Supprime définitivement le compte de l'utilisateur.
+     * Les recettes/commentaires publics sont automatiquement anonymisés (SET NULL en base),
+     * les autres données personnelles (stocks, listes, favoris...) sont supprimées en cascade.
+     * Un email de confirmation est envoyé avant la suppression effective.
+     *
+     * @throws \InvalidArgumentException si le mot de passe est incorrect
+     *         (le Controller convertira cette exception en réponse HTTP 422)
+     */
+    public function supprimerCompte(Utilisateur $utilisateur, string $motDePasse): void
+    {
+        if (!$this->passwordHasher->isPasswordValid($utilisateur, $motDePasse)) {
+            throw new \InvalidArgumentException('Mot de passe incorrect.');
+        }
+
+        $emailUtilisateur = $utilisateur->getEmail();
+
+        $this->entityManager->remove($utilisateur);
+        $this->entityManager->flush();
+
+        $message = (new Email())
+            ->from('no-reply@stocketoque.fr')
+            ->to($emailUtilisateur)
+            ->subject('Votre compte a été supprimé - Stock & Toque')
+            ->text('Votre compte Stock & Toque et toutes vos données personnelles ont bien été supprimés. Si vous n\'êtes pas à l\'origine de cette action, contactez-nous immédiatement.');
+
+        $this->mailer->send($message);
     }
 }

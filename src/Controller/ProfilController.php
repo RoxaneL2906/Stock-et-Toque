@@ -117,4 +117,31 @@ class ProfilController extends AbstractController
 
         return $response;
     }
+
+    /**
+     * Suppression du compte
+     */
+    #[Route('/api/profil/suppression', name: 'api_profil_suppression', methods: ['POST'])]
+    public function supprimerCompte(Request $request): JsonResponse
+    {
+        $donnees = json_decode($request->getContent(), true);
+
+        if (empty($donnees['motDePasse'])) {
+            return new JsonResponse(['message' => "Le champ 'motDePasse' est obligatoire."], 422);
+        }
+
+        $utilisateur = $this->getUser();
+
+        try {
+            $this->profilService->supprimerCompte($utilisateur, $donnees['motDePasse']);
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 422);
+        }
+
+        $response = new JsonResponse(['message' => 'Votre compte a bien été supprimé.'], 200);
+        $response->headers->clearCookie('access_token', '/', null, true, true, 'lax');
+        $response->headers->clearCookie('refresh_token', '/', null, true, true, 'lax');
+
+        return $response;
+    }
 }
