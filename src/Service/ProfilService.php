@@ -60,6 +60,7 @@ class ProfilService
 
     /**
      * Modifie l'email (US 2.2 - CA2/CA3). Nécessite le mot de passe actuel pour confirmation.
+     * Invalide les refresh tokens existants : l'utilisateur devra se reconnecter.
      *
      * @throws \InvalidArgumentException si le mot de passe actuel est incorrect,
      *         si le nouvel email est invalide, ou déjà utilisé par un autre compte
@@ -87,11 +88,14 @@ class ProfilService
             throw new \InvalidArgumentException(implode(' ', $messages));
         }
 
+        $this->invaliderRefreshTokens($utilisateur);
+
         $this->entityManager->flush();
     }
 
     /**
      * Modifie le mot de passe (US 2.2 - CA4). Nécessite l'ancien mot de passe.
+     * Invalide les refresh tokens existants : l'utilisateur devra se reconnecter.
      * Envoie un email de confirmation une fois le changement effectué.
      *
      * @throws \InvalidArgumentException si l'ancien mot de passe est incorrect,
@@ -125,6 +129,8 @@ class ProfilService
         );
         $utilisateur->eraseCredentials();
 
+        $this->invaliderRefreshTokens($utilisateur);
+
         $this->entityManager->flush();
 
         // Email de confirmation envoyé après coup, pour informer que le changement a bien été pris en compte
@@ -135,5 +141,16 @@ class ProfilService
             ->text('Votre mot de passe vient d\'être modifié avec succès. Si vous n\'êtes pas à l\'origine de cette action, contactez-nous immédiatement.');
 
         $this->mailer->send($message);
+    }
+
+    /**
+     * Invalide tous les refresh tokens de l'utilisateur (déconnexion de sécurité
+     * après modification d'une donnée sensible : email ou mot de passe).
+     */
+    private function invaliderRefreshTokens(Utilisateur $utilisateur): void
+    {
+        foreach ($utilisateur->getRefreshTokens() as $refreshToken) {
+            $this->entityManager->remove($refreshToken);
+        }
     }
 }

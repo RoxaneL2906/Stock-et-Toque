@@ -6,6 +6,7 @@ use App\Service\ProfilService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\Routing\Attribute\Route;
 
 class ProfilController extends AbstractController
@@ -75,7 +76,11 @@ class ProfilController extends AbstractController
             return new JsonResponse(['message' => $e->getMessage()], 422);
         }
 
-        return new JsonResponse(['message' => 'Votre adresse email a bien été modifiée.'], 200);
+        $response = new JsonResponse(['message' => 'Votre adresse email a bien été modifiée. Veuillez vous reconnecter.'], 200);
+        $response->headers->clearCookie('access_token', '/', null, true, true, 'lax');
+        $response->headers->clearCookie('refresh_token', '/', null, true, true, 'lax');
+
+        return $response;
     }
 
     /**
@@ -106,6 +111,10 @@ class ProfilController extends AbstractController
             return new JsonResponse(['message' => $e->getMessage()], 422);
         }
 
-        return new JsonResponse(['message' => 'Votre mot de passe a bien été modifié. Un email de confirmation vous a été envoyé.'], 200);
+        $response = new JsonResponse(['message' => 'Votre mot de passe a bien été modifié. Un email de confirmation vous a été envoyé. Veuillez vous reconnecter.'], 200);
+        $response->headers->clearCookie('access_token', '/', null, true, true, 'lax');
+        $response->headers->clearCookie('refresh_token', '/', null, true, true, 'lax');
+
+        return $response;
     }
 }
