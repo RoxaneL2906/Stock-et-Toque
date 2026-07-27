@@ -15,3 +15,7 @@ export function modifierEmail(donnees) {
 export function modifierMotDePasse(donnees) {
   return appelApi('/profil/mot-de-passe', donnees);
 }
+
+export function supprimerCompte(donnees) {
+  return appelApi('/profil/suppression', donnees);
+}

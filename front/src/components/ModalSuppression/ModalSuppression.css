@@ -1,0 +1,85 @@
+.modal-overlay-conteneur {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal-fond {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.modal-carte {
+  position: relative;
+  background-color: #1F2937;
+  border: 1px solid #374151;
+  border-radius: 20px;
+  padding: 32px 24px;
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.modal-icone-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.modal-titre {
+  color: #FFFFFF;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.modal-description {
+  color: var(--couleur-texte-clair);
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.modal-champ-mot-de-passe {
+  width: 100%;
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+.modal-erreur {
+  color: #EF4444;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.modal-boutons {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.modal-bouton-annuler {
+  flex: 1;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid #374151;
+  border-radius: 999px;
+  color: #FFFFFF;
+  font-weight: bold;
+  padding: 12px;
+  cursor: pointer;
+}

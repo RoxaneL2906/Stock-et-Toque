@@ -1,17 +1,18 @@
+import { useState, useEffect } from 'react';
 import { Camera, User, KeyRound, Utensils, Bell, Moon, X, BookMarked, Heart } from 'lucide-react';
 import HeaderAppli from '../../components/HeaderAppli/HeaderAppli';
 import FooterNav from '../../components/FooterNav/FooterNav';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import NavigationChevron from '../../components/NavigationChevron/NavigationChevron';
 import ToggleSwitch from '../../components/ToggleSwitch/ToggleSwitch';
+import ModalSuppression from '../../components/ModalSuppression/ModalSuppression';
+import { recupererProfil, supprimerCompte } from '../../services/profilApi';
 import './ProfilScreen.css';
-import { useState, useEffect } from 'react';
-import { recupererProfil } from '../../services/profilApi';
-
 
 function ProfilScreen({ onNaviguer }) {
   const [notificationsActives, setNotificationsActives] = useState(true);
   const [modeNuitActif, setModeNuitActif] = useState(true);
+  const [modalSuppressionOuverte, setModalSuppressionOuverte] = useState(false);
 
   const [utilisateur, setUtilisateur] = useState(null);
   const [erreur, setErreur] = useState('');
@@ -74,7 +75,7 @@ function ProfilScreen({ onNaviguer }) {
           <h2 className="profil-section-titre">Réglages</h2>
           <ToggleSwitch Icone={Bell} couleur="#EF4444" texte="Notifications" active={notificationsActives} onChange={() => setNotificationsActives(!notificationsActives)} />
           <ToggleSwitch Icone={Moon} couleur="#EF4444" texte="Mode nuit" active={modeNuitActif} onChange={() => setModeNuitActif(!modeNuitActif)} />
-          <button className="profil-supprimer-compte" onClick={() => onNaviguer('supprimerCompte')}>
+          <button className="profil-supprimer-compte" onClick={() => setModalSuppressionOuverte(true)}>
             <X size={16} color="#EF4444" />
             <span>Supprimer mon compte</span>
           </button>
@@ -83,6 +84,20 @@ function ProfilScreen({ onNaviguer }) {
         <PrimaryButton texte="Déconnexion" onClick={() => onNaviguer('connexion')} />
 
       </div>
+
+      {modalSuppressionOuverte && (
+        <ModalSuppression
+          titre="Supprimer mon compte"
+          description="Voulez-vous vraiment supprimer votre compte ? Cette action est irréversible : toutes vos données personnelles seront supprimées."
+          avecMotDePasse={true}
+          onConfirmer={async (motDePasse) => {
+            await supprimerCompte({ motDePasse });
+            onNaviguer('connexion');
+          }}
+          onFermer={() => setModalSuppressionOuverte(false)}
+        />
+      )}
+
       <FooterNav pageActive="profil" onNaviguer={onNaviguer} />
     </div>
   );
