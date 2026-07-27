@@ -35,4 +35,19 @@ class StockRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+
+    /**
+     * Retourne un stock précis appartenant à l'utilisateur (vérifie qu'il ne modifie pas le stock d'un autre).
+     */
+    public function findOneByIdEtUtilisateur(int $id, Utilisateur $utilisateur): ?Stock
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.id = :id')
+            ->andWhere('s.utilisateur = :utilisateur')
+            ->setParameter('id', $id)
+            ->setParameter('utilisateur', $utilisateur)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

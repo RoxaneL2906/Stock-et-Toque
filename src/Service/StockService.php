@@ -4,17 +4,19 @@ namespace App\Service;
 
 use App\Entity\Utilisateur;
 use App\Repository\StockRepository;
+use Doctrine\ORM\EntityManagerInterface;
 
 class StockService
 {
     public function __construct(
         private readonly StockRepository $stockRepository,
+        private readonly EntityManagerInterface $entityManager,
     ) {}
 
     /**
      * Retourne le stock de l'utilisateur, avec un statut d'alerte calculé pour chaque produit selon sa DLC/DDM.
      *
-     * @param string|null $emplacement 'frigo', 'placard', ou null pour tout afficher (CA2)
+     * @param string|null $emplacement 'frigo', 'placard', ou null pour tout afficher
      */
     public function consulterStock(Utilisateur $utilisateur, ?string $emplacement = null): array
     {
@@ -70,5 +72,66 @@ class StockService
         }
 
         return 'aucune';
+    }
+
+
+    /**
+     * Modifie la quantité et/ou l'emplacement d'un stock.
+     *
+     * @throws \InvalidArgumentException si le stock n'existe pas ou n'appartient pas à l'utilisateur
+     */
+    public function modifierStock(Utilisateur $utilisateur, int $stockId, int $quantite, string $emplacement): void
+    {
+        $stock = $this->stockRepository->findOneByIdEtUtilisateur($stockId, $utilisateur);
+
+        if ($stock === null) {
+            throw new \InvalidArgumentException('Ce produit ne fait pas partie de votre stock.');
+        }
+
+        $stock->setQuantite($quantite);
+        $stock->setEmplacement(\App\Enum\EmplacementEnum::from($emplacement));
+
+        $this->entityManager->flush();
+    }
+
+    /**
+     * Incrémente ou décrémente la quantité d'un stock de 1.
+     * Ne descend jamais en dessous de 0.
+     *
+     * @return int La nouvelle quantité, pour que le front sache si elle atteint 0 (proposer suppression)
+     *
+     * @throws \InvalidArgumentException si le stock n'existe pas ou n'appartient pas à l'utilisateur
+     */
+    public function ajusterQuantite(Utilisateur $utilisateur, int $stockId, int $delta): int
+    {
+        $stock = $this->stockRepository->findOneByIdEtUtilisateur($stockId, $utilisateur);
+
+        if ($stock === null) {
+            throw new \InvalidArgumentException('Ce produit ne fait pas partie de votre stock.');
+        }
+
+        $nouvelleQuantite = max(0, $stock->getQuantite() + $delta);
+        $stock->setQuantite($nouvelleQuantite);
+
+        $this->entityManager->flush();
+
+        return $nouvelleQuantite;
+    }
+
+    /**
+     * Supprime un produit du stock.
+     *
+     * @throws \InvalidArgumentException si le stock n'existe pas ou n'appartient pas à l'utilisateur
+     */
+    public function supprimerStock(Utilisateur $utilisateur, int $stockId): void
+    {
+        $stock = $this->stockRepository->findOneByIdEtUtilisateur($stockId, $utilisateur);
+
+        if ($stock === null) {
+            throw new \InvalidArgumentException('Ce produit ne fait pas partie de votre stock.');
+        }
+
+        $this->entityManager->remove($stock);
+        $this->entityManager->flush();
     }
 }
