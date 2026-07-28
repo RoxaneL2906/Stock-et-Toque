@@ -9,9 +9,11 @@ import ReinitialiserMotDePasseScreen from './screens/ReinitialiserMotDePasse/Rei
 import ProfilScreen from './screens/Profil/ProfilScreen';
 import ModifierInfosScreen from './screens/ModifierInfos/ModifierInfosScreen';
 import ChangerMotDePasseScreen from './screens/ChangerMotDePasse/ChangerMotDePasseScreen';
+import StockScreen from './screens/Stock/StockScreen';
+import AjouterProduitScreen from './screens/AjouterProduit/AjouterProduitScreen';
 
 function App() {
-  const [ecranActuel, setEcranActuel] = useState('accueil');
+ const [ecranActuel, setEcranActuel] = useState('accueil');
 
   useEffect(() => {
     const parametres = new URLSearchParams(window.location.search);
@@ -33,6 +35,8 @@ function App() {
       {ecranActuel === 'profil' && <ProfilScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'modifierInfos' && <ModifierInfosScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'changerMotDePasse' && <ChangerMotDePasseScreen onNaviguer={setEcranActuel} />}
+      {ecranActuel === 'stock' && <StockScreen onNaviguer={setEcranActuel} />}
+      {ecranActuel === 'ajouterProduit' && <AjouterProduitScreen onNaviguer={setEcranActuel} />}
     </>
   );
 }
