@@ -16,3 +16,11 @@ export function modifierStock(id, donnees) {
 export function supprimerStock(id) {
   return appelApi(`/stock/${id}`, null, 'DELETE');
 }
+
+export function rechercherProduitOpenFoodFacts(recherche) {
+  return appelApi(`/stock/recherche-produit?q=${encodeURIComponent(recherche)}`, null, 'GET');
+}
+
+export function ajouterAuStock(donnees) {
+  return appelApi('/stock', donnees);
+}
