@@ -11,6 +11,8 @@ import ModifierInfosScreen from './screens/ModifierInfos/ModifierInfosScreen';
 import ChangerMotDePasseScreen from './screens/ChangerMotDePasse/ChangerMotDePasseScreen';
 import StockScreen from './screens/Stock/StockScreen';
 import AjouterProduitScreen from './screens/AjouterProduit/AjouterProduitScreen';
+import ListeCoursesScreen from './screens/ListeCourses/ListeCoursesScreen';
+import AjouterArticleListeScreen from './screens/AjouterArticleListe/AjouterArticleListeScreen';
 
 function App() {
  const [ecranActuel, setEcranActuel] = useState('accueil');
@@ -37,6 +39,8 @@ function App() {
       {ecranActuel === 'changerMotDePasse' && <ChangerMotDePasseScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'stock' && <StockScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'ajouterProduit' && <AjouterProduitScreen onNaviguer={setEcranActuel} />}
+      {ecranActuel === 'courses' && <ListeCoursesScreen onNaviguer={setEcranActuel} />}
+      {ecranActuel === 'ajouterArticleListe' && <AjouterArticleListeScreen onNaviguer={setEcranActuel} />}
     </>
   );
 }
