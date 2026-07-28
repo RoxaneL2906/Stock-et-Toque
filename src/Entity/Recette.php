@@ -10,6 +10,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\HttpFoundation\File\File;
 
 /**
  * Recette : auteur_id nullable (anonymisation à la suppression du compte),
@@ -19,6 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: RecetteRepository::class)]
 #[ORM\Table(name: 'recette')]
 #[ORM\HasLifecycleCallbacks]
+#[Vich\Uploadable]
 class Recette
 {
     #[ORM\Id]
@@ -68,6 +71,12 @@ class Recette
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $photo = null;
+
+    #[Vich\UploadableField(mapping: 'recettes', fileNameProperty: 'photo')]
+    private ?File $imageFile = null;
+
+    #[ORM\Column(name: 'updated_at', type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(length: 20, enumType: VisibiliteEnum::class)]
     private VisibiliteEnum $visibilite = VisibiliteEnum::PRIVEE;
@@ -250,6 +259,25 @@ class Recette
     {
         $this->photo = $photo;
         return $this;
+    }
+
+    public function setImageFile(?File $imageFile = null): void
+    {
+        $this->imageFile = $imageFile;
+
+        if ($imageFile !== null) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
     }
 
     public function getVisibilite(): VisibiliteEnum
