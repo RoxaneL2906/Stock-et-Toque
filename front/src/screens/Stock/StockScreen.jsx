@@ -3,7 +3,8 @@ import { Search, Plus, ArrowUpDown } from 'lucide-react';
 import HeaderAppli from '../../components/HeaderAppli/HeaderAppli';
 import FooterNav from '../../components/FooterNav/FooterNav';
 import CarteProduitStock from '../../components/CarteProduitStock/CarteProduitStock';
-import { recupererStock, ajusterQuantiteStock } from '../../services/stockApi';
+import ModalSuppression from '../../components/ModalSuppression/ModalSuppression';
+import { recupererStock, ajusterQuantiteStock, supprimerStock } from '../../services/stockApi';
 import './StockScreen.css';
 
 function StockScreen({ onNaviguer }) {
@@ -12,6 +13,7 @@ function StockScreen({ onNaviguer }) {
   const [erreur, setErreur] = useState('');
   const [ongletActif, setOngletActif] = useState('tout');
   const [recherche, setRecherche] = useState('');
+  const [produitASupprimer, setProduitASupprimer] = useState(null);
 
   const chargerStock = () => {
     const emplacement = ongletActif === 'tout' ? null : ongletActif;
@@ -33,11 +35,21 @@ function StockScreen({ onNaviguer }) {
 
   const gererAjustement = async (id, delta) => {
     try {
-      await ajusterQuantiteStock(id, delta);
+      const nouvelleQuantite = await ajusterQuantiteStock(id, delta);
+      if (nouvelleQuantite.quantite === 0) {
+        const produit = produits.find((p) => p.id === id);
+        setProduitASupprimer(produit);
+      }
       chargerStock();
     } catch (err) {
       setErreur(err.message);
     }
+  };
+
+  const confirmerSuppression = async () => {
+    await supprimerStock(produitASupprimer.id);
+    setProduitASupprimer(null);
+    chargerStock();
   };
 
   const produitsFiltres = useMemo(() => {
@@ -165,6 +177,17 @@ function StockScreen({ onNaviguer }) {
         )}
 
       </div>
+
+      {produitASupprimer && (
+        <ModalSuppression
+          titre="Supprimer ce produit ?"
+          description={`"${produitASupprimer.nom}" est à 0. Voulez-vous le retirer de votre stock ?`}
+          texteBouton="Supprimer"
+          onConfirmer={confirmerSuppression}
+          onFermer={() => setProduitASupprimer(null)}
+        />
+      )}
+
       <FooterNav pageActive="stock" onNaviguer={onNaviguer} />
     </div>
   );
