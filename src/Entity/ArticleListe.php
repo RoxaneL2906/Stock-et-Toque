@@ -32,6 +32,9 @@ class ArticleListe
     #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
     private bool $coche = false;
 
+    #[ORM\Column(length: 30, enumType: \App\Enum\CategorieAchatEnum::class, nullable: true)]
+    private ?\App\Enum\CategorieAchatEnum $categorieAchat = null;
+
     #[ORM\Column(name: 'created_at', type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $createdAt = null;
 
@@ -89,6 +92,17 @@ class ArticleListe
     public function setCoche(bool $coche): static
     {
         $this->coche = $coche;
+        return $this;
+    }
+
+    public function getCategorieAchat(): ?\App\Enum\CategorieAchatEnum
+    {
+        return $this->categorieAchat;
+    }
+
+    public function setCategorieAchat(?\App\Enum\CategorieAchatEnum $categorieAchat): static
+    {
+        $this->categorieAchat = $categorieAchat;
         return $this;
     }
 
