@@ -34,6 +34,9 @@ class Stock
     #[Assert\NotNull(message: "L'emplacement est obligatoire.")]
     private ?EmplacementEnum $emplacement = null;
 
+    #[ORM\Column(length: 20, enumType: \App\Enum\UniteEnum::class, nullable: true)]
+    private ?\App\Enum\UniteEnum $unite = null;
+
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dlc = null;
 
@@ -97,6 +100,17 @@ class Stock
     public function setEmplacement(EmplacementEnum $emplacement): static
     {
         $this->emplacement = $emplacement;
+        return $this;
+    }
+
+    public function getUnite(): ?\App\Enum\UniteEnum
+    {
+        return $this->unite;
+    }
+
+    public function setUnite(?\App\Enum\UniteEnum $unite): static
+    {
+        $this->unite = $unite;
         return $this;
     }
 

@@ -29,6 +29,7 @@ class StockService
                 'nom' => $stock->getProduit()->getNom(),
                 'photo' => $stock->getProduit()->getPhoto(),
                 'quantite' => $stock->getQuantite(),
+                'unite' => $stock->getUnite()?->value,
                 'emplacement' => $stock->getEmplacement()->value,
                 'dlc' => $stock->getDlc()?->format('Y-m-d'),
                 'ddm' => $stock->getDdm()?->format('Y-m-d'),
@@ -73,7 +74,6 @@ class StockService
 
         return 'aucune';
     }
-
 
     /**
      * Modifie la quantité et/ou l'emplacement d'un stock.

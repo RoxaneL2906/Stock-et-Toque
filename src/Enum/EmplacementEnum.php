@@ -6,4 +6,5 @@ enum EmplacementEnum: string
 {
     case FRIGO = 'frigo';
     case PLACARD = 'placard';
+    case AUTRE = 'autre';
 }

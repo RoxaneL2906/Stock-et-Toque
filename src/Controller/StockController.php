@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Enum\EmplacementEnum;
+use App\Service\OpenFoodFactsService;
 
 class StockController extends AbstractController
 {
@@ -92,5 +92,22 @@ class StockController extends AbstractController
         }
 
         return new JsonResponse(['message' => 'Produit supprimé du stock.'], 200);
+    }
+
+    /**
+     * Recherche de produits sur OpenFoodFacts 
+     */
+    #[Route('/api/stock/recherche-produit', name: 'api_stock_recherche_produit', methods: ['GET'])]
+    public function rechercherProduit(Request $request, OpenFoodFactsService $openFoodFactsService): JsonResponse
+    {
+        $recherche = $request->query->get('q');
+
+        if (empty($recherche)) {
+            return new JsonResponse(['message' => "Le paramètre 'q' est obligatoire."], 422);
+        }
+
+        $resultats = $openFoodFactsService->rechercherParNom($recherche);
+
+        return new JsonResponse($resultats, 200);
     }
 }
