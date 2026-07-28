@@ -16,7 +16,7 @@ class StockController extends AbstractController
     ) {}
 
     /**
-     * Consultation du stock 
+     * Consultation du stock
      */
     #[Route('/api/stock', name: 'api_stock_consultation', methods: ['GET'])]
     public function consulterStock(Request $request): JsonResponse
@@ -55,7 +55,7 @@ class StockController extends AbstractController
     }
 
     /**
-     * Ajustement rapide de la quantité (+1 / -1) 
+     * Ajustement rapide de la quantité (+1 / -1)
      */
     #[Route('/api/stock/{id}/ajuster', name: 'api_stock_ajustement', methods: ['POST'])]
     public function ajusterQuantite(int $id, Request $request): JsonResponse
@@ -78,7 +78,7 @@ class StockController extends AbstractController
     }
 
     /**
-     * Suppression d'un produit du stock 
+     * Suppression d'un produit du stock
      */
     #[Route('/api/stock/{id}', name: 'api_stock_suppression', methods: ['DELETE'])]
     public function supprimerStock(int $id): JsonResponse
@@ -95,7 +95,7 @@ class StockController extends AbstractController
     }
 
     /**
-     * Recherche de produits sur OpenFoodFacts 
+     * Recherche de produits sur OpenFoodFacts
      */
     #[Route('/api/stock/recherche-produit', name: 'api_stock_recherche_produit', methods: ['GET'])]
     public function rechercherProduit(Request $request, OpenFoodFactsService $openFoodFactsService): JsonResponse
@@ -109,5 +109,44 @@ class StockController extends AbstractController
         $resultats = $openFoodFactsService->rechercherParNom($recherche);
 
         return new JsonResponse($resultats, 200);
+    }
+
+    /**
+     * Ajout d'un produit au stock
+     */
+    #[Route('/api/stock', name: 'api_stock_ajout', methods: ['POST'])]
+    public function ajouterAuStock(Request $request): JsonResponse
+    {
+        $donnees = json_decode($request->getContent(), true);
+
+        $champsRequis = ['nom', 'quantite', 'emplacement'];
+        foreach ($champsRequis as $champ) {
+            if (!isset($donnees[$champ]) || $donnees[$champ] === '') {
+                return new JsonResponse(['message' => "Le champ '$champ' est obligatoire."], 422);
+            }
+        }
+
+        $utilisateur = $this->getUser();
+
+        try {
+            $this->stockService->ajouterAuStock(
+                utilisateur: $utilisateur,
+                nom: $donnees['nom'],
+                quantite: $donnees['quantite'],
+                emplacement: $donnees['emplacement'],
+                unite: $donnees['unite'] ?? null,
+                dlc: $donnees['dlc'] ?? null,
+                ddm: $donnees['ddm'] ?? null,
+                codeBarres: $donnees['codeBarres'] ?? null,
+                photo: $donnees['photo'] ?? null,
+                categorie: $donnees['categorie'] ?? null,
+            );
+        } catch (\ValueError $e) {
+            return new JsonResponse(['message' => 'Emplacement ou unité invalide.'], 422);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => 'Date invalide.'], 422);
+        }
+
+        return new JsonResponse(['message' => 'Produit ajouté au stock avec succès.'], 201);
     }
 }

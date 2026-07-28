@@ -4,12 +4,14 @@ namespace App\Service;
 
 use App\Entity\Utilisateur;
 use App\Repository\StockRepository;
+use App\Repository\ProduitRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class StockService
 {
     public function __construct(
         private readonly StockRepository $stockRepository,
+        private readonly ProduitRepository $produitRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {}
 
@@ -132,6 +134,59 @@ class StockService
         }
 
         $this->entityManager->remove($stock);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * Ajoute un produit au stock. Si le produit (même nom) existe déjà
+     * au même emplacement, sa quantité est incrémentée plutôt qu'une nouvelle entrée créée.
+     */
+    public function ajouterAuStock(
+        \App\Entity\Utilisateur $utilisateur,
+        string $nom,
+        int $quantite,
+        string $emplacement,
+        ?string $unite = null,
+        ?string $dlc = null,
+        ?string $ddm = null,
+        ?string $codeBarres = null,
+        ?string $photo = null,
+        ?string $categorie = null,
+    ): void {
+        $emplacementEnum = \App\Enum\EmplacementEnum::from($emplacement);
+        $uniteEnum = $unite !== null ? \App\Enum\UniteEnum::from($unite) : null;
+
+        // Recherche du produit générique par nom (créé s'il n'existe pas)
+        $produit = $this->produitRepository->findOneByNom($nom);
+        if ($produit === null) {
+            $produit = new \App\Entity\Produit();
+            $produit->setNom($nom);
+            $produit->setCodeBarres($codeBarres);
+            $produit->setPhoto($photo);
+            $produit->setCategorie($categorie);
+            $this->entityManager->persist($produit);
+            $this->entityManager->flush();
+        }
+
+        // CA4 : fusion si ce produit est déjà dans le stock de l'utilisateur, au même emplacement
+        $stockExistant = $this->stockRepository->findOneByUtilisateurProduitEtEmplacement($utilisateur, $produit, $emplacementEnum);
+
+        if ($stockExistant !== null) {
+            $stockExistant->setQuantite($stockExistant->getQuantite() + $quantite);
+            $this->entityManager->flush();
+            return;
+        }
+
+        $stock = new \App\Entity\Stock();
+        $stock->setUtilisateur($utilisateur);
+        $stock->setProduit($produit);
+        $stock->setQuantite($quantite);
+        $stock->setEmplacement($emplacementEnum);
+        $stock->setUnite($uniteEnum);
+        $stock->setDlc($dlc !== null ? new \DateTime($dlc) : null);
+        $stock->setDdm($ddm !== null ? new \DateTime($ddm) : null);
+
+        $this->entityManager->persist($stock);
         $this->entityManager->flush();
     }
 }

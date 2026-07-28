@@ -15,4 +15,16 @@ class ProduitRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Produit::class);
     }
+
+    /**
+     * Recherche un produit générique par son nom exact 
+     */
+    public function findOneByNom(string $nom): ?Produit
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.nom = :nom')
+            ->setParameter('nom', $nom)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

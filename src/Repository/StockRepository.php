@@ -50,4 +50,23 @@ class StockRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    /**
+     * Recherche si un utilisateur a déjà ce produit en stock à un emplacement donné
+     */
+    public function findOneByUtilisateurProduitEtEmplacement(
+        Utilisateur $utilisateur,
+        \App\Entity\Produit $produit,
+        \App\Enum\EmplacementEnum $emplacement,
+    ): ?Stock {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.utilisateur = :utilisateur')
+            ->andWhere('s.produit = :produit')
+            ->andWhere('s.emplacement = :emplacement')
+            ->setParameter('utilisateur', $utilisateur)
+            ->setParameter('produit', $produit)
+            ->setParameter('emplacement', $emplacement)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }
