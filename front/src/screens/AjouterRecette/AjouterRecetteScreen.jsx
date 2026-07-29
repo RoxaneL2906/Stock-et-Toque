@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Camera, X, Minus, Plus, ChefHat, Lock, Unlock, Clock, Heater, CloudUpload } from 'lucide-react';
+import { Camera, X, Minus, Plus, ChefHat, Lock, Unlock, Clock, Heater } from 'lucide-react';
 import HeaderAppli from '../../components/HeaderAppli/HeaderAppli';
 import FooterNav from '../../components/FooterNav/FooterNav';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
+import BoutonRetour from '../../components/BoutonRetour/BoutonRetour';
 import { creerRecette, listerEquipements, uploaderPhotoRecette } from '../../services/recetteApi';
 import './AjouterRecetteScreen.css';
 
@@ -123,6 +124,7 @@ function AjouterRecetteScreen({ onNaviguer }) {
     <div className="ecran-complet">
       <HeaderAppli />
       <div className="ecran-contenu">
+        <BoutonRetour onClick={() => onNaviguer('recettes')} />
 
         <h2 className="ajout-recette-titre">Ajouter une recette</h2>
 
@@ -379,8 +381,7 @@ function AjouterRecetteScreen({ onNaviguer }) {
           onClick={() => soumettre(true)}
           disabled={chargement}
         >
-          <CloudUpload size={16} color="var(--couleur-texte-clair)" />
-          <span>Votre recette est automatiquement enregistrée en tant que brouillon.</span>
+          Votre recette est automatiquement enregistrée en tant que brouillon.
         </button>
 
       </div>

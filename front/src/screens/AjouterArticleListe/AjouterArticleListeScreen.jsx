@@ -4,6 +4,7 @@ import HeaderAppli from '../../components/HeaderAppli/HeaderAppli';
 import FooterNav from '../../components/FooterNav/FooterNav';
 import FormInput from '../../components/FormInput/FormInput';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
+import BoutonRetour from '../../components/BoutonRetour/BoutonRetour';
 import { rechercherProduitOpenFoodFacts } from '../../services/stockApi';
 import { ajouterArticleListe } from '../../services/listeCoursesApi';
 import './AjouterArticleListeScreen.css';
@@ -85,6 +86,7 @@ function AjouterArticleListeScreen({ onNaviguer }) {
     <div className="ecran-complet">
       <HeaderAppli />
       <div className="ecran-contenu">
+        <BoutonRetour onClick={() => onNaviguer('courses')} />
 
         <div className="ajout-barre-recherche">
           <Search size={18} color="#9CA3AF" />

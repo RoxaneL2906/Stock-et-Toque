@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Search, Minus, Plus, Calendar } from 'lucide-react';
+import { Search, Minus, Plus } from 'lucide-react';
 import HeaderAppli from '../../components/HeaderAppli/HeaderAppli';
 import FooterNav from '../../components/FooterNav/FooterNav';
 import FormInput from '../../components/FormInput/FormInput';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
+import BoutonRetour from '../../components/BoutonRetour/BoutonRetour';
 import { rechercherProduitOpenFoodFacts, ajouterAuStock } from '../../services/stockApi';
 import './AjouterProduitScreen.css';
 
@@ -94,6 +95,7 @@ function AjouterProduitScreen({ onNaviguer }) {
     <div className="ecran-complet">
       <HeaderAppli />
       <div className="ecran-contenu">
+        <BoutonRetour onClick={() => onNaviguer('stock')} />
 
         <div className="ajout-barre-recherche">
           <Search size={18} color="#9CA3AF" />
@@ -181,7 +183,6 @@ function AjouterProduitScreen({ onNaviguer }) {
           <div className="ajout-champ">
             <label className="form-input-label">Date limite de consommation</label>
             <div className="ajout-date-conteneur">
-              <Calendar size={16} color="#9CA3AF" />
               <input
                 type="date"
                 value={dlc}

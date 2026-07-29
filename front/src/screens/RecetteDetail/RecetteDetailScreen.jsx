@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Clock, ChefHat, Euro, Pencil, Trash2 } from 'lucide-react';
 import HeaderAppli from '../../components/HeaderAppli/HeaderAppli';
 import FooterNav from '../../components/FooterNav/FooterNav';
+import BoutonRetour from '../../components/BoutonRetour/BoutonRetour';
 import ModalSuppression from '../../components/ModalSuppression/ModalSuppression';
 import { consulterMaRecette, supprimerRecette } from '../../services/recetteApi';
 import photoDefaut from '../../assets/images/recetteDefaut.png';
@@ -44,6 +45,7 @@ function RecetteDetailScreen({ recetteId, onNaviguer, onNaviguerVersModification
     <div className="ecran-complet">
       <HeaderAppli />
       <div className="ecran-contenu">
+        <BoutonRetour onClick={() => onNaviguer('mesRecettes')} />
 
         <div className="recette-detail-entete">
           <h2 className="recette-detail-titre">{recette.titre}</h2>

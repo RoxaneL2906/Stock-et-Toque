@@ -3,6 +3,7 @@ import { Search, Plus } from 'lucide-react';
 import HeaderAppli from '../../components/HeaderAppli/HeaderAppli';
 import FooterNav from '../../components/FooterNav/FooterNav';
 import CarteRecette from '../../components/CarteRecette/CarteRecette';
+import BoutonRetour from '../../components/BoutonRetour/BoutonRetour';
 import { listerMesRecettes } from '../../services/recetteApi';
 import './MesRecettesScreen.css';
 
@@ -59,6 +60,7 @@ function MesRecettesScreen({ onNaviguer, onNaviguerVersRecette }) {
     <div className="ecran-complet">
       <HeaderAppli />
       <div className="ecran-contenu">
+        <BoutonRetour onClick={() => onNaviguer('profil')} />
 
         <div className="mes-recettes-entete">
           <h2 className="mes-recettes-titre">Mes recettes</h2>

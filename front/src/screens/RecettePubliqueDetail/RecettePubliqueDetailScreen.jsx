@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Clock, ChefHat, Euro, Heart } from 'lucide-react';
 import HeaderAppli from '../../components/HeaderAppli/HeaderAppli';
 import FooterNav from '../../components/FooterNav/FooterNav';
+import BoutonRetour from '../../components/BoutonRetour/BoutonRetour';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { consulterRecettePublique, basculerFavori } from '../../services/recetteApi';
 import photoDefaut from '../../assets/images/recetteDefaut.png';
@@ -49,6 +50,7 @@ function RecettePubliqueDetailScreen({ recetteId, onNaviguer }) {
     <div className="ecran-complet">
       <HeaderAppli />
       <div className="ecran-contenu">
+        <BoutonRetour onClick={() => onNaviguer('recettes')} />
 
         <div className="recette-pub-entete">
           <h2 className="recette-pub-titre">{recette.titre}</h2>

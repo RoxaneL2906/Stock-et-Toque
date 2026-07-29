@@ -1,0 +1,14 @@
+.bouton-retour {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--couleur-vert);
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 0;
+}
