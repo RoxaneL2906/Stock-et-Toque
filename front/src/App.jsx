@@ -20,6 +20,7 @@ import ModifierRecetteScreen from './screens/ModifierRecette/ModifierRecetteScre
 import RecettesPubliquesScreen from './screens/RecettesPubliques/RecettesPubliquesScreen';
 import RecettePubliqueDetailScreen from './screens/RecettePubliqueDetail/RecettePubliqueDetailScreen';
 import MesFavorisScreen from './screens/MesFavoris/MesFavorisScreen';
+import AccueilConnecteScreen from './screens/AccueilConnecte/AccueilConnecteScreen';
 
 function App() {
   const [ecranActuel, setEcranActuel] = useState('accueil');
@@ -56,6 +57,7 @@ function App() {
       {ecranActuel === 'motDePasseOublie' && <MotDePasseOublieScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'emailEnvoye' && <EmailEnvoyeScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'reinitialiserMotDePasse' && <ReinitialiserMotDePasseScreen onNaviguer={setEcranActuel} />}
+      {ecranActuel === 'accueilConnecte' && <AccueilConnecteScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'profil' && <ProfilScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'modifierInfos' && <ModifierInfosScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'changerMotDePasse' && <ChangerMotDePasseScreen onNaviguer={setEcranActuel} />}
