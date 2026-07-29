@@ -7,7 +7,7 @@ import { consulterMaRecette, supprimerRecette } from '../../services/recetteApi'
 import photoDefaut from '../../assets/images/recetteDefaut.png';
 import './RecetteDetailScreen.css';
 
-function RecetteDetailScreen({ recetteId, onNaviguer }) {
+function RecetteDetailScreen({ recetteId, onNaviguer, onNaviguerVersModification }) {
   const [recette, setRecette] = useState(null);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState('');
@@ -48,7 +48,7 @@ function RecetteDetailScreen({ recetteId, onNaviguer }) {
         <div className="recette-detail-entete">
           <h2 className="recette-detail-titre">{recette.titre}</h2>
           <div className="recette-detail-actions">
-            <button onClick={() => onNaviguer(`modifierRecette:${recetteId}`)} aria-label="Modifier">
+            <button onClick={() => onNaviguerVersModification()} aria-label="Modifier">
               <Pencil size={18} color="var(--couleur-orange)" />
             </button>
             <button onClick={() => setModalSuppressionOuverte(true)} aria-label="Supprimer">
