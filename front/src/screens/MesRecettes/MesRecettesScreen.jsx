@@ -13,7 +13,7 @@ const TABS = [
   { valeur: 'brouillons', label: 'Brouillons' },
 ];
 
-function MesRecettesScreen({ onNaviguer }) {
+function MesRecettesScreen({ onNaviguer, onNaviguerVersRecette }) {
   const [ongletActif, setOngletActif] = useState('toutes');
   const [recherche, setRecherche] = useState('');
   const [recettes, setRecettes] = useState([]);
@@ -98,7 +98,7 @@ function MesRecettesScreen({ onNaviguer }) {
             <CarteRecette
               key={recette.id}
               recette={recette}
-              onClick={() => onNaviguer(`recetteDetail:${recette.id}`)}
+              onClick={() => onNaviguerVersRecette(recette.id)}
             />
           ))
         )}

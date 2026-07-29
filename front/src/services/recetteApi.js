@@ -45,4 +45,3 @@ export async function uploaderPhotoRecette(id, fichier) {
 export function listerEquipements() {
   return appelApi('/equipements', null, 'GET');
 }
-

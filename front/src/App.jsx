@@ -15,9 +15,11 @@ import ListeCoursesScreen from './screens/ListeCourses/ListeCoursesScreen';
 import AjouterArticleListeScreen from './screens/AjouterArticleListe/AjouterArticleListeScreen';
 import AjouterRecetteScreen from './screens/AjouterRecette/AjouterRecetteScreen';
 import MesRecettesScreen from './screens/MesRecettes/MesRecettesScreen';
+import RecetteDetailScreen from './screens/RecetteDetail/RecetteDetailScreen';
 
 function App() {
- const [ecranActuel, setEcranActuel] = useState('accueil');
+  const [ecranActuel, setEcranActuel] = useState('accueil');
+  const [recetteSelectionneeId, setRecetteSelectionneeId] = useState(null);
 
   useEffect(() => {
     const parametres = new URLSearchParams(window.location.search);
@@ -27,6 +29,11 @@ function App() {
   }, []);
 
   useDeconnexionAutomatique(() => setEcranActuel('connexion'));
+
+  const naviguerVersRecette = (id) => {
+    setRecetteSelectionneeId(id);
+    setEcranActuel('recetteDetail');
+  };
 
   return (
     <>
@@ -44,7 +51,12 @@ function App() {
       {ecranActuel === 'courses' && <ListeCoursesScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'ajouterArticleListe' && <AjouterArticleListeScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'ajouterRecette' && <AjouterRecetteScreen onNaviguer={setEcranActuel} />}
-      {ecranActuel === 'mesRecettes' && <MesRecettesScreen onNaviguer={setEcranActuel} />}
+      {ecranActuel === 'mesRecettes' && (
+        <MesRecettesScreen onNaviguer={setEcranActuel} onNaviguerVersRecette={naviguerVersRecette} />
+      )}
+      {ecranActuel === 'recetteDetail' && (
+        <RecetteDetailScreen recetteId={recetteSelectionneeId} onNaviguer={setEcranActuel} />
+      )}
     </>
   );
 }
