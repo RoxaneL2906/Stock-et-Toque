@@ -17,6 +17,8 @@ import AjouterRecetteScreen from './screens/AjouterRecette/AjouterRecetteScreen'
 import MesRecettesScreen from './screens/MesRecettes/MesRecettesScreen';
 import RecetteDetailScreen from './screens/RecetteDetail/RecetteDetailScreen';
 import ModifierRecetteScreen from './screens/ModifierRecette/ModifierRecetteScreen';
+import RecettesPubliquesScreen from './screens/RecettesPubliques/RecettesPubliquesScreen';
+import RecettePubliqueDetailScreen from './screens/RecettePubliqueDetail/RecettePubliqueDetailScreen';
 
 function App() {
   const [ecranActuel, setEcranActuel] = useState('accueil');
@@ -38,6 +40,11 @@ function App() {
 
   const naviguerVersModificationRecette = () => {
     setEcranActuel('modifierRecette');
+  };
+
+  const naviguerVersRecettePublique = (id) => {
+    setRecetteSelectionneeId(id);
+    setEcranActuel('recettePublique');
   };
 
   return (
@@ -68,6 +75,15 @@ function App() {
       )}
       {ecranActuel === 'modifierRecette' && (
         <ModifierRecetteScreen recetteId={recetteSelectionneeId} onNaviguer={setEcranActuel} />
+      )}
+      {ecranActuel === 'recettes' && (
+        <RecettesPubliquesScreen
+          onNaviguer={setEcranActuel}
+          onNaviguerVersRecettePublique={naviguerVersRecettePublique}
+        />
+      )}
+      {ecranActuel === 'recettePublique' && (
+        <RecettePubliqueDetailScreen recetteId={recetteSelectionneeId} onNaviguer={setEcranActuel} />
       )}
     </>
   );

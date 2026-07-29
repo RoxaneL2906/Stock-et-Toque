@@ -45,3 +45,27 @@ export async function uploaderPhotoRecette(id, fichier) {
 export function listerEquipements() {
   return appelApi('/equipements', null, 'GET');
 }
+
+export function rechercherRecettesPubliques(params = {}) {
+  const query = new URLSearchParams();
+  if (params.q) query.append('q', params.q);
+  if (params.tempsMax) query.append('tempsMax', params.tempsMax);
+  if (params.nbPersonnes) query.append('nbPersonnes', params.nbPersonnes);
+  if (params.difficulte) query.append('difficulte', params.difficulte);
+  if (params.budgetMax) query.append('budgetMax', params.budgetMax);
+  if (params.tri) query.append('tri', params.tri);
+  const suffixe = query.toString() ? `?${query.toString()}` : '';
+  return appelApi(`/recettes/publiques${suffixe}`, null, 'GET');
+}
+
+export function consulterRecettePublique(id) {
+  return appelApi(`/recettes/publiques/${id}`, null, 'GET');
+}
+
+export function basculerFavori(id) {
+  return appelApi(`/recettes/${id}/favori`, {});
+}
+
+export function listerMesFavoris() {
+  return appelApi('/recettes/favoris', null, 'GET');
+}
