@@ -169,4 +169,17 @@ class RecetteController extends AbstractController
 
         return new JsonResponse(['message' => 'Photo mise à jour avec succès.'], 200);
     }
+
+    /**
+     * Liste des équipements disponibles (référentiel fixe, pour le formulaire de création de recette)
+     */
+    #[Route('/api/equipements', name: 'api_equipements_liste', methods: ['GET'])]
+    public function listerEquipements(\App\Repository\EquipementRepository $equipementRepository): JsonResponse
+    {
+        $equipements = $equipementRepository->findAll();
+
+        $resultat = array_map(fn ($e) => ['id' => $e->getId(), 'nom' => $e->getNom()], $equipements);
+
+        return new JsonResponse($resultat, 200);
+    }
 }
