@@ -1,0 +1,80 @@
+.mes-recettes-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 12px;
+  margin-bottom: 16px;
+}
+
+.mes-recettes-titre {
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.mes-recettes-bouton-ajouter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--couleur-vert);
+  border: none;
+  border-radius: 999px;
+  padding: 8px 14px;
+  color: #111827;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.mes-recettes-tabs {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 16px;
+  overflow-x: auto;
+}
+
+.mes-recettes-tab,
+.mes-recettes-tab-actif {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mes-recettes-tab {
+  background-color: #1B263D;
+  border: 1px solid #374151;
+  color: var(--couleur-texte-clair);
+}
+
+.mes-recettes-tab-actif {
+  background-color: var(--couleur-vert);
+  border: 1px solid var(--couleur-vert);
+  color: #111827;
+}
+
+.mes-recettes-barre-recherche {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #1F2937;
+  border-radius: 999px;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.mes-recettes-barre-recherche input {
+  background: none;
+  border: none;
+  outline: none;
+  color: #FFFFFF;
+  font-size: 14px;
+  flex: 1;
+}

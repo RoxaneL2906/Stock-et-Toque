@@ -14,6 +14,7 @@ import AjouterProduitScreen from './screens/AjouterProduit/AjouterProduitScreen'
 import ListeCoursesScreen from './screens/ListeCourses/ListeCoursesScreen';
 import AjouterArticleListeScreen from './screens/AjouterArticleListe/AjouterArticleListeScreen';
 import AjouterRecetteScreen from './screens/AjouterRecette/AjouterRecetteScreen';
+import MesRecettesScreen from './screens/MesRecettes/MesRecettesScreen';
 
 function App() {
  const [ecranActuel, setEcranActuel] = useState('accueil');
@@ -43,6 +44,7 @@ function App() {
       {ecranActuel === 'courses' && <ListeCoursesScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'ajouterArticleListe' && <AjouterArticleListeScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'ajouterRecette' && <AjouterRecetteScreen onNaviguer={setEcranActuel} />}
+      {ecranActuel === 'mesRecettes' && <MesRecettesScreen onNaviguer={setEcranActuel} />}
     </>
   );
 }
