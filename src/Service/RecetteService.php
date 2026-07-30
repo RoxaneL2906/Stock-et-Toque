@@ -473,4 +473,46 @@ class RecetteService
             'etapes' => $etapes,
         ];
     }
+
+
+   /**
+     * Compare les ingrédients d'une recette avec le stock de l'utilisateur.
+     * Retourne la liste des ingrédients manquants ou insuffisants, avec la quantité à acheter.
+     */
+    public function comparerAvecStock(Utilisateur $utilisateur, int $recetteId): array
+    {
+        $recette = $this->recetteRepository->findOnePublique($recetteId)
+            ?? $this->recetteRepository->findOneByIdEtAuteur($recetteId, $utilisateur);
+
+        if ($recette === null) {
+            throw new \InvalidArgumentException('Cette recette est introuvable.');
+        }
+
+        $manquants = [];
+        foreach ($recette->getIngredients() as $ingredient) {
+            $produit = $ingredient->getProduit();
+            $quantiteRequise = $ingredient->getQuantite() !== null ? (float) $ingredient->getQuantite() : null;
+
+            $quantiteEnStock = 0.0;
+            foreach ($produit->getStocks() as $stock) {
+                if ($stock->getUtilisateur() === $utilisateur) {
+                    $quantiteEnStock += (float) $stock->getQuantite();
+                }
+            }
+
+            $quantiteManquante = $quantiteRequise !== null
+                ? max(0, $quantiteRequise - $quantiteEnStock)
+                : ($quantiteEnStock > 0 ? 0 : 1);
+
+            if ($quantiteManquante > 0) {
+                $manquants[] = [
+                    'nom' => $produit->getNom(),
+                    'quantite' => $quantiteManquante,
+                    'unite' => $ingredient->getUnite(),
+                ];
+            }
+        }
+
+        return $manquants;
+    }
 }
