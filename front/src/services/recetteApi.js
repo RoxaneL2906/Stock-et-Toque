@@ -85,3 +85,7 @@ export function modifierCommentaire(commentaireId, contenu) {
 export function supprimerCommentaire(commentaireId) {
   return appelApi(`/commentaires/${commentaireId}`, null, 'DELETE');
 }
+
+export function comparerAvecStock(recetteId) {
+  return appelApi(`/recettes/${recetteId}/comparer-stock`, null, 'GET');
+}

@@ -411,3 +411,26 @@
 .planning-modal-pastille-grise {
   background-color: #4B5563;
 }
+
+.recette-pub-stock-info {
+  color: var(--couleur-texte-clair);
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.recette-pub-stock-liste {
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+.recette-pub-stock-ligne {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  color: #FFFFFF;
+  font-size: 13px;
+  cursor: pointer;
+}
