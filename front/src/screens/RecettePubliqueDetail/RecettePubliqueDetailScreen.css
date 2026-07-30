@@ -1,0 +1,272 @@
+.recette-pub-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+
+.recette-pub-titre {
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.recette-pub-favori {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recette-pub-auteur {
+  color: var(--couleur-texte-clair);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.recette-pub-image {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.recette-pub-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.recette-pub-image-titre {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(17, 24, 39, 0.75);
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 10px 12px;
+}
+
+.recette-pub-infos-grid {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.recette-pub-info-case {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background-color: #1B263D;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 10px 8px;
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.recette-pub-note {
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.recette-pub-section-titre {
+  color: #FFFFFF;
+  font-size: 15px;
+  font-weight: bold;
+  width: 100%;
+  margin-top: 12px;
+  margin-bottom: 10px;
+}
+
+.recette-pub-equipements {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.recette-pub-equipement-pilule {
+  background-color: #1B263D;
+  border: 1px solid #374151;
+  border-radius: 999px;
+  padding: 8px 14px;
+  color: var(--couleur-texte-clair);
+  font-size: 13px;
+}
+
+.recette-pub-ingredients {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.recette-pub-ingredient-ligne {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  color: #FFFFFF;
+  font-size: 14px;
+}
+
+.recette-pub-etapes {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.recette-pub-etape-ligne {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.recette-pub-etape-numero {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--couleur-vert);
+  color: #111827;
+  font-weight: bold;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.recette-pub-etape-ligne p {
+  color: #FFFFFF;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.recette-pub-commentaire-form {
+  width: 100%;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.recette-pub-commentaire-zone-texte {
+  position: relative;
+  width: 100%;
+}
+
+.recette-pub-commentaire-textarea {
+  width: 100%;
+  min-height: 70px;
+  background-color: #1B263D;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #FFFFFF;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.recette-pub-commentaire-textarea:focus {
+  outline: none;
+  border-color: var(--couleur-vert);
+}
+
+.recette-pub-commentaire-compteur-overlay {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  color: var(--couleur-texte-clair);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+.recette-pub-commentaire-form-bas {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 6px;
+  gap: 8px;
+}
+
+.recette-pub-commentaire-envoyer {
+  background-color: var(--couleur-vert);
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  color: #111827;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.recette-pub-commentaire-annuler {
+  background: none;
+  border: none;
+  color: var(--couleur-texte-clair);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.recette-pub-commentaires-liste {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.recette-pub-commentaire-carte {
+  background-color: #1B263D;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+
+.recette-pub-commentaire-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.recette-pub-commentaire-auteur {
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.recette-pub-commentaire-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.recette-pub-commentaire-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.recette-pub-commentaire-contenu {
+  color: var(--couleur-texte-clair);
+  font-size: 13px;
+  line-height: 1.4;
+}

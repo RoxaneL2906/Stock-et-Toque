@@ -21,7 +21,7 @@ function InscriptionScreen({ onNaviguer }) {
 
     try {
       await inscrire({ prenom, nom, email, motDePasse, confirmationMotDePasse });
-      onNaviguer('accueil');
+      onNaviguer('accueilConnecte');
     } catch (err) {
       setErreur(err.message);
     } finally {

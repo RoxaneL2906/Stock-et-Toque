@@ -17,6 +17,10 @@ import AjouterRecetteScreen from './screens/AjouterRecette/AjouterRecetteScreen'
 import MesRecettesScreen from './screens/MesRecettes/MesRecettesScreen';
 import RecetteDetailScreen from './screens/RecetteDetail/RecetteDetailScreen';
 import ModifierRecetteScreen from './screens/ModifierRecette/ModifierRecetteScreen';
+import RecettesPubliquesScreen from './screens/RecettesPubliques/RecettesPubliquesScreen';
+import RecettePubliqueDetailScreen from './screens/RecettePubliqueDetail/RecettePubliqueDetailScreen';
+import MesFavorisScreen from './screens/MesFavoris/MesFavorisScreen';
+import AccueilConnecteScreen from './screens/AccueilConnecte/AccueilConnecteScreen';
 
 function App() {
   const [ecranActuel, setEcranActuel] = useState('accueil');
@@ -40,6 +44,11 @@ function App() {
     setEcranActuel('modifierRecette');
   };
 
+  const naviguerVersRecettePublique = (id) => {
+    setRecetteSelectionneeId(id);
+    setEcranActuel('recettePublique');
+  };
+
   return (
     <>
       {ecranActuel === 'accueil' && <AccueilScreen onNaviguer={setEcranActuel} />}
@@ -48,6 +57,7 @@ function App() {
       {ecranActuel === 'motDePasseOublie' && <MotDePasseOublieScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'emailEnvoye' && <EmailEnvoyeScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'reinitialiserMotDePasse' && <ReinitialiserMotDePasseScreen onNaviguer={setEcranActuel} />}
+      {ecranActuel === 'accueilConnecte' && <AccueilConnecteScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'profil' && <ProfilScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'modifierInfos' && <ModifierInfosScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'changerMotDePasse' && <ChangerMotDePasseScreen onNaviguer={setEcranActuel} />}
@@ -68,6 +78,18 @@ function App() {
       )}
       {ecranActuel === 'modifierRecette' && (
         <ModifierRecetteScreen recetteId={recetteSelectionneeId} onNaviguer={setEcranActuel} />
+      )}
+      {ecranActuel === 'recettes' && (
+        <RecettesPubliquesScreen
+          onNaviguer={setEcranActuel}
+          onNaviguerVersRecettePublique={naviguerVersRecettePublique}
+        />
+      )}
+      {ecranActuel === 'recettePublique' && (
+        <RecettePubliqueDetailScreen recetteId={recetteSelectionneeId} onNaviguer={setEcranActuel} />
+      )}
+      {ecranActuel === 'mesFavoris' && (
+        <MesFavorisScreen onNaviguer={setEcranActuel} onNaviguerVersRecettePublique={naviguerVersRecettePublique} />
       )}
     </>
   );

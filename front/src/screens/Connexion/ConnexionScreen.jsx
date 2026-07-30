@@ -19,7 +19,7 @@ function ConnexionScreen({ onNaviguer }) {
 
     try {
       await connecter({ email, motDePasse, seSouvenirDeMoi });
-      onNaviguer('profil'); // TODO : rediriger vers AccueilConnecteScreen une fois créé
+      onNaviguer('accueilConnecte');
     } catch (err) {
       setErreur(err.message);
     } finally {

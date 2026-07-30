@@ -43,7 +43,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
         // ===== 200 RECETTES PUBLIQUES =====
         for ($i = 0; $i < 200; $i++) {
             $recette = new Recette();
-            $recette->setTitre($faker->randomElement($titresRecettes) . ' ' . $faker->numberBetween(1, 999));
+            $recette->setTitre($faker->randomElement($titresRecettes));
             $recette->setDescription($faker->paragraph(3));
             $recette->setTempsPreparation($faker->numberBetween(10, 60));
             $recette->setTempsCuisson($faker->optional(0.8)->numberBetween(5, 90));

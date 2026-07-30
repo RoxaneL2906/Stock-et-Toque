@@ -2,7 +2,7 @@ import { Home, Package, ShoppingCart, Utensils, Calendar, CircleUserRound } from
 import './FooterNav.css';
 
 const ELEMENTS_NAV = [
-  { page: 'accueil', Icone: Home, couleur: '#EF4444' },
+  { page: 'accueilConnecte', Icone: Home, couleur: '#EF4444' },
   { page: 'stock', Icone: Package, couleur: '#60A5FA' },
   { page: 'courses', Icone: ShoppingCart, couleur: '#A78BFA' },
   { page: 'recettes', Icone: Utensils, couleur: '#22C55E' },

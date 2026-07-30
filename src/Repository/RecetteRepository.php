@@ -58,4 +58,96 @@ class RecetteRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    /**
+     * Récupère une recette publique par son ID 
+     * Une recette publique reste consultable même si son auteur a été anonymisé.
+     */
+    public function findOnePublique(int $id): ?Recette
+    {
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.id = :id')
+            ->andWhere('r.visibilite = :visibilite')
+            ->setParameter('id', $id)
+            ->setParameter('visibilite', VisibiliteEnum::PUBLIQUE)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * Recherche de recettes publiques avec filtres combinables 
+     * Ne renvoie jamais les brouillons 
+     *
+     * @param string[] $ingredientsInclus Noms d'ingrédients à inclure (recherche partielle, insensible à la casse/accents)
+     * @param string[] $ingredientsExclus Noms d'ingrédients à exclure
+     *
+     * @return Recette[]
+     */
+    public function rechercherPubliques(
+        ?string $recherche = null,
+        array $ingredientsInclus = [],
+        array $ingredientsExclus = [],
+        ?int $tempsMax = null,
+        ?int $nbPersonnes = null,
+        ?string $difficulte = null,
+        ?string $budgetMax = null,
+        string $tri = 'recent',
+    ): array {
+        $qb = $this->createQueryBuilder('r')
+            ->andWhere('r.visibilite = :visibilite')
+            ->setParameter('visibilite', VisibiliteEnum::PUBLIQUE);
+
+        if ($recherche !== null && trim($recherche) !== '') {
+            // insensible aux accents : on compare via une fonction native MySQL (collation par défaut déjà insensible aux accents)
+            $qb->andWhere('LOWER(r.titre) LIKE LOWER(:recherche)')
+                ->setParameter('recherche', '%' . $recherche . '%');
+        }
+
+        foreach ($ingredientsInclus as $index => $nomIngredient) {
+            $alias = 'ingInclus' . $index;
+            $qb->join('r.ingredients', $alias)
+                ->join($alias . '.produit', $alias . 'Produit')
+                ->andWhere("LOWER({$alias}Produit.nom) LIKE LOWER(:{$alias})")
+                ->setParameter($alias, '%' . $nomIngredient . '%');
+        }
+
+        if (!empty($ingredientsExclus)) {
+            $sousRequete = $this->getEntityManager()->createQueryBuilder()
+                ->select('IDENTITY(ingExclu.recette)')
+                ->from('App\Entity\Ingredient', 'ingExclu')
+                ->join('ingExclu.produit', 'produitExclu')
+                ->where('LOWER(produitExclu.nom) IN (:nomsExclus)');
+
+            $qb->andWhere($qb->expr()->notIn('r.id', $sousRequete->getDQL()))
+                ->setParameter('nomsExclus', array_map('strtolower', $ingredientsExclus));
+        }
+
+        if ($tempsMax !== null) {
+            $qb->andWhere('(COALESCE(r.tempsPreparation, 0) + COALESCE(r.tempsCuisson, 0)) <= :tempsMax')
+                ->setParameter('tempsMax', $tempsMax);
+        }
+
+        if ($nbPersonnes !== null) {
+            $qb->andWhere('r.nbPersonnes = :nbPersonnes')
+                ->setParameter('nbPersonnes', $nbPersonnes);
+        }
+
+        if ($difficulte !== null) {
+            $qb->andWhere('r.difficulte = :difficulte')
+                ->setParameter('difficulte', \App\Enum\DifficulteEnum::from($difficulte));
+        }
+
+        if ($budgetMax !== null) {
+            $qb->andWhere('r.budgetEstime <= :budgetMax')
+                ->setParameter('budgetMax', $budgetMax);
+        }
+
+        match ($tri) {
+            'recent' => $qb->orderBy('r.createdAt', 'DESC'),
+            'rapide' => $qb->orderBy('r.tempsPreparation', 'ASC'),
+            default => $qb->orderBy('r.createdAt', 'DESC'),
+        };
+
+        return $qb->getQuery()->getResult();
+    }
 }

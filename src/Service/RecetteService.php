@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\EtapeRecette;
+use App\Entity\Favori;
 use App\Entity\Ingredient;
 use App\Entity\Produit;
 use App\Entity\Recette;
@@ -10,6 +11,8 @@ use App\Entity\Utilisateur;
 use App\Enum\DifficulteEnum;
 use App\Enum\VisibiliteEnum;
 use App\Repository\EquipementRepository;
+use App\Repository\FavoriRepository;
+use App\Repository\NoteRepository;
 use App\Repository\ProduitRepository;
 use App\Repository\RecetteRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,12 +24,14 @@ class RecetteService
         private readonly RecetteRepository $recetteRepository,
         private readonly EquipementRepository $equipementRepository,
         private readonly ProduitRepository $produitRepository,
+        private readonly NoteRepository $noteRepository,
+        private readonly FavoriRepository $favoriRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {}
 
     /**
-     * Crée une recette. 
-     * Si $brouillon est true, la recette est enregistrée en brouillon 
+     * Crée une recette.
+     * Si $brouillon est true, la recette est enregistrée en brouillon
      *
      * @param array $ingredients Liste de ['nom' => string, 'quantite' => ?float, 'unite' => ?string]
      * @param array $etapes Liste de descriptions (string), l'ordre suit l'index du tableau
@@ -59,8 +64,6 @@ class RecetteService
         $recette->setVisibilite(VisibiliteEnum::from($visibilite));
         $recette->setBrouillon($brouillon);
 
-        // Important : on persiste la recette AVANT d'ajouter ses ingrédients/étapes,
-        // pour que Doctrine la connaisse déjà si un flush intermédiaire survient (ex: création d'un nouveau Produit)
         $this->entityManager->persist($recette);
 
         $this->appliquerEquipements($recette, $equipementIds);
@@ -83,7 +86,7 @@ class RecetteService
     }
 
     /**
-     * Consulte le détail d'une recette appartenant à l'utilisateur 
+     * Consulte le détail d'une recette appartenant à l'utilisateur
      *
      * @throws \InvalidArgumentException si la recette n'existe pas ou n'appartient pas à l'utilisateur
      */
@@ -193,6 +196,100 @@ class RecetteService
     }
 
     /**
+     * Recherche de recettes publiques avec filtres 
+     */
+    public function rechercherRecettesPubliques(
+        ?string $recherche,
+        array $ingredientsInclus,
+        array $ingredientsExclus,
+        ?int $tempsMax,
+        ?int $nbPersonnes,
+        ?string $difficulte,
+        ?string $budgetMax,
+        string $tri,
+    ): array {
+        $recettes = $this->recetteRepository->rechercherPubliques(
+            recherche: $recherche,
+            ingredientsInclus: $ingredientsInclus,
+            ingredientsExclus: $ingredientsExclus,
+            tempsMax: $tempsMax,
+            nbPersonnes: $nbPersonnes,
+            difficulte: $difficulte,
+            budgetMax: $budgetMax,
+            tri: $tri,
+        );
+
+        return array_map(fn ($r) => $this->formaterRecetteResumePublique($r), $recettes);
+    }
+
+    /**
+     * Consulte le détail d'une recette publique. Accessible à tout utilisateur connecté,
+     * pas seulement à l'auteur (contrairement à consulterMaRecette).
+     *
+     * @throws \InvalidArgumentException si la recette n'existe pas ou n'est pas publique
+     */
+    public function consulterRecettePublique(Utilisateur $utilisateurConnecte, int $recetteId): array
+    {
+        $recette = $this->recetteRepository->findOnePublique($recetteId);
+
+        if ($recette === null) {
+            throw new \InvalidArgumentException('Cette recette est introuvable ou n\'est plus publique.');
+        }
+
+        $donnees = $this->formaterRecetteDetail($recette);
+        $donnees['auteur'] = $recette->getAuteur() !== null
+            ? $recette->getAuteur()->getPrenom() . ' ' . $recette->getAuteur()->getNom()
+            : 'Utilisateur anonyme';
+        $donnees['noteMoyenne'] = $this->noteRepository->calculerMoyenne($recette);
+        $donnees['estFavorite'] = $this->favoriRepository->findOneByUtilisateurEtRecette($utilisateurConnecte, $recette) !== null;
+
+        return $donnees;
+    }
+
+    /**
+     * Ajoute ou retire une recette des favoris 
+     *
+     * @return bool true si la recette est maintenant en favori, false si elle vient d'être retirée
+     *
+     * @throws \InvalidArgumentException si la recette n'existe pas ou n'est pas publique
+     */
+    public function basculerFavori(Utilisateur $utilisateur, int $recetteId): bool
+    {
+        $recette = $this->recetteRepository->findOnePublique($recetteId);
+
+        if ($recette === null) {
+            throw new \InvalidArgumentException('Cette recette est introuvable ou n\'est plus publique.');
+        }
+
+        $favoriExistant = $this->favoriRepository->findOneByUtilisateurEtRecette($utilisateur, $recette);
+
+        if ($favoriExistant !== null) {
+            $this->entityManager->remove($favoriExistant);
+            $this->entityManager->flush();
+            return false;
+        }
+
+        $favori = new Favori();
+        $favori->setUtilisateur($utilisateur);
+        $favori->setRecette($recette);
+
+        $this->entityManager->persist($favori);
+        $this->entityManager->flush();
+
+        return true;
+    }
+
+    /**
+     * Liste les recettes favorites de l'utilisateur (section "Mes favoris" du profil).
+     */
+    public function listerMesFavoris(Utilisateur $utilisateur): array
+    {
+        $favoris = $this->favoriRepository->findByUtilisateur($utilisateur);
+
+        return array_map(fn ($f) => $this->formaterRecetteResumePublique($f->getRecette()), $favoris);
+    }
+
+    /**
      * Associe les équipements existants (par ID) à la recette.
      */
     private function appliquerEquipements(Recette $recette, array $equipementIds): void
@@ -210,8 +307,6 @@ class RecetteService
     /**
      * Crée les lignes d'ingrédients. Le produit générique est recherché par nom
      * (créé s'il n'existe pas), même logique que pour le Stock et la Liste de courses.
-     * Pas de flush() intermédiaire ici : tout est flushé en une seule fois à la fin
-     * de creerRecette()/modifierRecette(), une fois la Recette déjà persistée.
      */
     private function appliquerIngredients(Recette $recette, array $ingredients): void
     {
@@ -318,6 +413,16 @@ class RecetteService
             'visibilite' => $recette->getVisibilite()->value,
             'brouillon' => $recette->isBrouillon(),
         ];
+    }
+
+    /**
+     * Format résumé pour une recette publique (listes de recherche/favoris) : inclut la note moyenne.
+     */
+    private function formaterRecetteResumePublique(Recette $recette): array
+    {
+        $resume = $this->formaterRecetteResume($recette);
+        $resume['noteMoyenne'] = $this->noteRepository->calculerMoyenne($recette);
+        return $resume;
     }
 
     /**

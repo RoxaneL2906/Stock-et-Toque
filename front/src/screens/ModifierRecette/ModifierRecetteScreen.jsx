@@ -3,6 +3,7 @@ import { Camera, X, Minus, Plus, ChefHat, Lock, Unlock, Clock, Heater } from 'lu
 import HeaderAppli from '../../components/HeaderAppli/HeaderAppli';
 import FooterNav from '../../components/FooterNav/FooterNav';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
+import BoutonRetour from '../../components/BoutonRetour/BoutonRetour';
 import { consulterMaRecette, modifierRecette, listerEquipements, uploaderPhotoRecette } from '../../services/recetteApi';
 import '../AjouterRecette/AjouterRecetteScreen.css';
 
@@ -164,6 +165,7 @@ function ModifierRecetteScreen({ recetteId, onNaviguer }) {
     <div className="ecran-complet">
       <HeaderAppli />
       <div className="ecran-contenu">
+        <BoutonRetour onClick={() => onNaviguer('recetteDetail')} />
 
         <h2 className="ajout-recette-titre">Modifier "{titre}"</h2>
 

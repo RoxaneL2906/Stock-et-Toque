@@ -15,7 +15,7 @@ class RecetteController extends AbstractController
     ) {}
 
     /**
-     * Création d'une recette 
+     * Création d'une recette
      */
     #[Route('/api/recettes', name: 'api_recettes_creation', methods: ['POST'])]
     public function creerRecette(Request $request): JsonResponse
@@ -55,7 +55,7 @@ class RecetteController extends AbstractController
     }
 
     /**
-     * Liste de mes recettes 
+     * Liste de mes recettes
      */
     #[Route('/api/recettes/mes-recettes', name: 'api_recettes_liste', methods: ['GET'])]
     public function listerMesRecettes(Request $request): JsonResponse
@@ -68,6 +68,68 @@ class RecetteController extends AbstractController
         $recettes = $this->recetteService->listerMesRecettes($utilisateur, $visibilite, $brouillon);
 
         return new JsonResponse($recettes, 200);
+    }
+
+    /**
+     * Recherche de recettes publiques avec filtres 
+     */
+    #[Route('/api/recettes/publiques', name: 'api_recettes_recherche_publique', methods: ['GET'])]
+    public function rechercherRecettesPubliques(Request $request): JsonResponse
+    {
+        $recherche = $request->query->get('q');
+        $ingredientsInclus = $request->query->all('ingredientsInclus');
+        $ingredientsExclus = $request->query->all('ingredientsExclus');
+        $tempsMax = $request->query->get('tempsMax') !== null ? (int) $request->query->get('tempsMax') : null;
+        $nbPersonnes = $request->query->get('nbPersonnes') !== null ? (int) $request->query->get('nbPersonnes') : null;
+        $difficulte = $request->query->get('difficulte');
+        $budgetMax = $request->query->get('budgetMax');
+        $tri = $request->query->get('tri', 'recent');
+
+        try {
+            $recettes = $this->recetteService->rechercherRecettesPubliques(
+                recherche: $recherche,
+                ingredientsInclus: $ingredientsInclus,
+                ingredientsExclus: $ingredientsExclus,
+                tempsMax: $tempsMax,
+                nbPersonnes: $nbPersonnes,
+                difficulte: $difficulte,
+                budgetMax: $budgetMax,
+                tri: $tri,
+            );
+        } catch (\ValueError $e) {
+            return new JsonResponse(['message' => 'Difficulté invalide.'], 422);
+        }
+
+        return new JsonResponse($recettes, 200);
+    }
+
+    /**
+     * Consultation d'une recette publique
+     */
+    #[Route('/api/recettes/publiques/{id}', name: 'api_recettes_publique_detail', methods: ['GET'])]
+    public function consulterRecettePublique(int $id): JsonResponse
+    {
+        $utilisateur = $this->getUser();
+
+        try {
+            $recette = $this->recetteService->consulterRecettePublique($utilisateur, $id);
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 404);
+        }
+
+        return new JsonResponse($recette, 200);
+    }
+
+    /**
+     * Liste des recettes favorites (section "Mes favoris")
+     */
+    #[Route('/api/recettes/favoris', name: 'api_recettes_favoris_liste', methods: ['GET'])]
+    public function listerMesFavoris(): JsonResponse
+    {
+        $utilisateur = $this->getUser();
+        $favoris = $this->recetteService->listerMesFavoris($utilisateur);
+
+        return new JsonResponse($favoris, 200);
     }
 
     /**
@@ -168,6 +230,23 @@ class RecetteController extends AbstractController
         }
 
         return new JsonResponse(['message' => 'Photo mise à jour avec succès.'], 200);
+    }
+
+    /**
+     * Ajout/retrait des favoris 
+     */
+    #[Route('/api/recettes/{id}/favori', name: 'api_recettes_favori', methods: ['POST'])]
+    public function basculerFavori(int $id): JsonResponse
+    {
+        $utilisateur = $this->getUser();
+
+        try {
+            $estFavorite = $this->recetteService->basculerFavori($utilisateur, $id);
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 404);
+        }
+
+        return new JsonResponse(['estFavorite' => $estFavorite], 200);
     }
 
     /**
