@@ -45,7 +45,8 @@ class PlanningService
      * Si $urlSource pointe vers une recette de l'app, elle est automatiquement associée
      * et le plat n'est pas traité comme un plat libre.
      *
-     * @throws \InvalidArgumentException si ni platLibre ni urlSource valide n'est fourni
+     * @throws \InvalidArgumentException si ni platLibre ni urlSource valide n'est fourni,
+     *         ou si le créneau est déjà passé
      */
     public function definirCreneau(
         Utilisateur $utilisateur,
@@ -60,6 +61,10 @@ class PlanningService
         $momentEnum = MomentEnum::from($moment);
 
         $planning = $this->recupererOuCreerPlanning($utilisateur, $semaineDebut);
+
+        if ($this->creneauEstPasse($semaineDebut, $jourEnum, $momentEnum)) {
+            throw new \InvalidArgumentException('Impossible de modifier un créneau déjà passé.');
+        }
 
         // Si une URL est fournie et pointe vers une recette de l'app, on l'associe automatiquement
         if ($recetteId === null && $urlSource !== null) {
@@ -101,7 +106,8 @@ class PlanningService
     /**
      * Supprime un créneau.
      *
-     * @throws \InvalidArgumentException si le créneau n'existe pas ou n'appartient pas à l'utilisateur
+     * @throws \InvalidArgumentException si le créneau n'existe pas, n'appartient pas à l'utilisateur,
+     *         ou est déjà passé
      */
     public function supprimerCreneau(Utilisateur $utilisateur, int $creneauId): void
     {
@@ -109,6 +115,10 @@ class PlanningService
 
         if ($creneau === null) {
             throw new \InvalidArgumentException('Ce créneau ne fait pas partie de votre planning.');
+        }
+
+        if ($this->creneauEstPasse($creneau->getPlanning()->getSemaineDebut(), $creneau->getJour(), $creneau->getMoment())) {
+            throw new \InvalidArgumentException('Impossible de supprimer un créneau déjà passé.');
         }
 
         $this->entityManager->remove($creneau);
@@ -144,6 +154,21 @@ class PlanningService
         }
 
         return null;
+    }
+
+    /**
+     * Vérifie si un créneau (jour + moment d'une semaine donnée) est déjà passé par rapport à maintenant.
+     */
+    private function creneauEstPasse(\DateTimeInterface $semaineDebut, JourSemaineEnum $jour, MomentEnum $moment): bool
+    {
+        $indexJour = array_search($jour, JourSemaineEnum::cases());
+        $dateJour = \DateTime::createFromInterface($semaineDebut);
+        $dateJour->modify("+{$indexJour} days");
+
+        $heureLimite = $moment === MomentEnum::MIDI ? '14:00' : '22:00';
+        $dateJour->modify($heureLimite);
+
+        return $dateJour < new \DateTime();
     }
 
     private function formaterCreneau(Creneau $creneau): array

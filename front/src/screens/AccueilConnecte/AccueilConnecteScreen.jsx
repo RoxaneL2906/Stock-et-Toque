@@ -8,7 +8,7 @@ import { rechercherRecettesPubliques } from '../../services/recetteApi';
 import photoDefaut from '../../assets/images/recetteDefaut.png';
 import './AccueilConnecteScreen.css';
 
-function AccueilConnecteScreen({ onNaviguer }) {
+function AccueilConnecteScreen({ onNaviguer, onNaviguerVersRecettePublique }) {
   const [prenom, setPrenom] = useState('');
   const [produitsExpires, setProduitsExpires] = useState([]);
   const [produitsBientot, setProduitsBientot] = useState([]);
@@ -79,7 +79,7 @@ function AccueilConnecteScreen({ onNaviguer }) {
                 Planning →
               </span>
             </div>
-            <div className="accueil-connecte-repas-carte" onClick={() => onNaviguer('recettes')}>
+            <div className="accueil-connecte-repas-carte" onClick={() => onNaviguerVersRecettePublique(prochainRepas.id)}>
               <img src={prochainRepas.photo || photoDefaut} alt={prochainRepas.titre} />
               <div className="accueil-connecte-repas-overlay">
                 <p className="accueil-connecte-repas-titre">{prochainRepas.titre}</p>
@@ -102,7 +102,7 @@ function AccueilConnecteScreen({ onNaviguer }) {
                 <div
                   key={recette.id}
                   className="accueil-connecte-suggestion-carte"
-                  onClick={() => onNaviguer('recettes')}
+                  onClick={() => onNaviguerVersRecettePublique(recette.id)}
                 >
                   <img src={recette.photo || photoDefaut} alt={recette.titre} />
                   <p>{recette.titre}</p>

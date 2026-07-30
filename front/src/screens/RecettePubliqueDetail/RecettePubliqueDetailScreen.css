@@ -161,6 +161,27 @@
   line-height: 1.4;
 }
 
+.recette-pub-boutons-action {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.recette-pub-bouton-planning {
+  background: none;
+  border: 1px solid var(--couleur-vert);
+  border-radius: 20px;
+  padding: 12px 16px;
+  color: var(--couleur-vert);
+  font-size: 13px;
+  font-weight: bold;
+  width: 180px;
+  cursor: pointer;
+}
+
 .recette-pub-commentaire-form {
   width: 100%;
   margin-top: 16px;
@@ -246,10 +267,21 @@
   margin-bottom: 6px;
 }
 
+.recette-pub-commentaire-auteur-date {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
 .recette-pub-commentaire-auteur {
   color: #FFFFFF;
   font-size: 13px;
   font-weight: bold;
+}
+
+.recette-pub-commentaire-date {
+  color: var(--couleur-texte-clair);
+  font-size: 11px;
 }
 
 .recette-pub-commentaire-actions {
@@ -269,4 +301,113 @@
   color: var(--couleur-texte-clair);
   font-size: 13px;
   line-height: 1.4;
+}
+
+.planning-modal-carte-large {
+  max-width: 380px;
+}
+
+.planning-modal-nav-semaine {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--couleur-texte-clair);
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.planning-modal-nav-semaine button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.planning-modal-grille {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.planning-modal-jour-colonne {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.planning-modal-jour-label {
+  color: var(--couleur-texte-clair);
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.planning-modal-case-libre,
+.planning-modal-case-occupee,
+.planning-modal-case-passe {
+  width: 100%;
+  height: 32px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.planning-modal-case-libre {
+  background-color: #111827;
+  border: 1px solid var(--couleur-vert);
+  color: var(--couleur-vert);
+}
+
+.planning-modal-case-occupee {
+  background-color: #111827;
+  border: 1px solid var(--couleur-orange);
+  color: var(--couleur-orange);
+}
+
+.planning-modal-case-passe {
+  background-color: #1B263D;
+  border: 1px solid #374151;
+  color: #4B5563;
+  cursor: not-allowed;
+}
+
+.planning-modal-legende {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 11px;
+  color: var(--couleur-texte-clair);
+}
+
+.planning-modal-legende span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.planning-modal-pastille {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.planning-modal-pastille-verte {
+  background-color: var(--couleur-vert);
+}
+
+.planning-modal-pastille-orange {
+  background-color: var(--couleur-orange);
+}
+
+.planning-modal-pastille-grise {
+  background-color: #4B5563;
 }

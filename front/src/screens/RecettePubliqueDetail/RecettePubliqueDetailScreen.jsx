@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Clock, ChefHat, Euro, Heart, Trash2, Pencil } from 'lucide-react';
+import { Clock, ChefHat, Euro, Heart, Trash2, Pencil, ChevronLeft, ChevronRight } from 'lucide-react';
 import HeaderAppli from '../../components/HeaderAppli/HeaderAppli';
 import FooterNav from '../../components/FooterNav/FooterNav';
 import BoutonRetour from '../../components/BoutonRetour/BoutonRetour';
@@ -14,14 +14,32 @@ import {
   supprimerCommentaire,
 } from '../../services/recetteApi';
 import { recupererProfil } from '../../services/profilApi';
+import { definirCreneau, consulterSemainePlanning } from '../../services/planningApi';
+import {
+  obtenirLundiDeSemaine,
+  formaterDateApi,
+  nomJour,
+  formaterJourMois,
+  decalerSemaine,
+  creneauEstPasse,
+} from '../../utils/dateSemaine';
 import photoDefaut from '../../assets/images/recetteDefaut.png';
 import './RecettePubliqueDetailScreen.css';
 
-function RecettePubliqueDetailScreen({ recetteId, onNaviguer }) {
+const JOURS_ENUM = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
+const MOMENTS = ['midi', 'soir'];
+
+function RecettePubliqueDetailScreen({ recetteId, onNaviguer, creneauCible, onCreneauAjoute }) {
   const [recette, setRecette] = useState(null);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState('');
   const [favoriEnCours, setFavoriEnCours] = useState(false);
+  const [ajoutPlanningEnCours, setAjoutPlanningEnCours] = useState(false);
+
+  const [modalPlanningOuverte, setModalPlanningOuverte] = useState(false);
+  const [lundiModal, setLundiModal] = useState(obtenirLundiDeSemaine());
+  const [creneauxModal, setCreneauxModal] = useState([]);
+  const [erreurModal, setErreurModal] = useState('');
 
   const [monId, setMonId] = useState(null);
   const [commentaires, setCommentaires] = useState([]);
@@ -47,6 +65,14 @@ function RecettePubliqueDetailScreen({ recetteId, onNaviguer }) {
     chargerCommentaires();
   }, [recetteId]);
 
+  useEffect(() => {
+    if (!modalPlanningOuverte) return;
+
+    consulterSemainePlanning(formaterDateApi(lundiModal))
+      .then((donnees) => setCreneauxModal(donnees.creneaux))
+      .catch(() => setCreneauxModal([]));
+  }, [modalPlanningOuverte, lundiModal]);
+
   const chargerCommentaires = () => {
     listerCommentaires(recetteId)
       .then(setCommentaires)
@@ -62,6 +88,50 @@ function RecettePubliqueDetailScreen({ recetteId, onNaviguer }) {
       setErreur(err.message);
     } finally {
       setFavoriEnCours(false);
+    }
+  };
+
+  const ajouterAuCreneau = async (semaineDebut, jour, moment) => {
+    setAjoutPlanningEnCours(true);
+    try {
+      await definirCreneau({ semaineDebut, jour, moment, recetteId });
+    } catch (err) {
+      setErreur(err.message);
+    } finally {
+      setAjoutPlanningEnCours(false);
+    }
+  };
+
+  const gererAjoutAuPlanning = async () => {
+    if (creneauCible) {
+      await ajouterAuCreneau(creneauCible.semaineDebut, creneauCible.jour, creneauCible.moment);
+      onCreneauAjoute();
+    } else {
+      setErreurModal('');
+      setLundiModal(obtenirLundiDeSemaine());
+      setModalPlanningOuverte(true);
+    }
+  };
+
+  const trouverCreneauModal = (indexJour, moment) => {
+    const jourEnum = JOURS_ENUM[indexJour];
+    return creneauxModal.find((c) => c.jour === jourEnum && c.moment === moment) || null;
+  };
+
+  const choisirCreneauModal = async (indexJour, moment) => {
+    if (creneauEstPasse(lundiModal, indexJour, moment)) return;
+
+    setErreurModal('');
+    try {
+      await definirCreneau({
+        semaineDebut: formaterDateApi(lundiModal),
+        jour: JOURS_ENUM[indexJour],
+        moment,
+        recetteId,
+      });
+      setModalPlanningOuverte(false);
+    } catch (err) {
+      setErreurModal(err.message);
     }
   };
 
@@ -114,7 +184,7 @@ function RecettePubliqueDetailScreen({ recetteId, onNaviguer }) {
     <div className="ecran-complet">
       <HeaderAppli />
       <div className="ecran-contenu">
-        <BoutonRetour onClick={() => onNaviguer('recettes')} />
+        <BoutonRetour onClick={() => onNaviguer(creneauCible ? 'planning' : 'recettes')} />
 
         <div className="recette-pub-entete">
           <h2 className="recette-pub-titre">{recette.titre}</h2>
@@ -204,7 +274,15 @@ function RecettePubliqueDetailScreen({ recetteId, onNaviguer }) {
           ))}
         </div>
 
-        <PrimaryButton texte="Vérifier mon stock" onClick={() => {}} />
+        <div className="recette-pub-boutons-action">
+          <button className="recette-pub-bouton-planning" onClick={() => {}}>
+            Vérifier mon stock
+          </button>
+          <PrimaryButton
+            texte={ajoutPlanningEnCours ? 'Ajout...' : 'Ajouter au planning'}
+            onClick={gererAjoutAuPlanning}
+          />
+        </div>
 
         <h3 className="recette-pub-section-titre">Commentaires ({commentaires.length})</h3>
 
@@ -214,6 +292,12 @@ function RecettePubliqueDetailScreen({ recetteId, onNaviguer }) {
               className="recette-pub-commentaire-textarea"
               value={nouveauCommentaire}
               onChange={(e) => setNouveauCommentaire(e.target.value.slice(0, 500))}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  gererAjoutCommentaire(e);
+                }
+              }}
               placeholder="Laissez un commentaire..."
             />
             <span className="recette-pub-commentaire-compteur-overlay">{nouveauCommentaire.length}/500</span>
@@ -235,6 +319,12 @@ function RecettePubliqueDetailScreen({ recetteId, onNaviguer }) {
                       className="recette-pub-commentaire-textarea"
                       value={texteEdition}
                       onChange={(e) => setTexteEdition(e.target.value.slice(0, 500))}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          validerEdition(commentaire.id);
+                        }
+                      }}
                     />
                     <span className="recette-pub-commentaire-compteur-overlay">{texteEdition.length}/500</span>
                   </div>
@@ -258,7 +348,10 @@ function RecettePubliqueDetailScreen({ recetteId, onNaviguer }) {
               ) : (
                 <>
                   <div className="recette-pub-commentaire-entete">
-                    <span className="recette-pub-commentaire-auteur">{commentaire.auteur}</span>
+                    <div className="recette-pub-commentaire-auteur-date">
+                      <span className="recette-pub-commentaire-auteur">{commentaire.auteur}</span>
+                      <span className="recette-pub-commentaire-date">{commentaire.createdAt}</span>
+                    </div>
                     {commentaire.auteurId === monId && (
                       <div className="recette-pub-commentaire-actions">
                         <button onClick={() => commencerEdition(commentaire)} aria-label="Modifier">
@@ -278,6 +371,67 @@ function RecettePubliqueDetailScreen({ recetteId, onNaviguer }) {
         </div>
 
       </div>
+
+      {modalPlanningOuverte && (
+        <div className="planning-modal-overlay">
+          <div className="planning-modal-fond" onClick={() => setModalPlanningOuverte(false)} />
+          <div className="planning-modal-carte planning-modal-carte-large">
+            <h3 className="planning-modal-titre">Choisir un créneau</h3>
+
+            <div className="planning-modal-nav-semaine">
+              <button onClick={() => setLundiModal(decalerSemaine(lundiModal, -1))} aria-label="Semaine précédente">
+                <ChevronLeft size={16} color="#FFFFFF" />
+              </button>
+              <span>
+                {formaterJourMois(lundiModal)} - {formaterJourMois(decalerSemaine(lundiModal, 1))}
+              </span>
+              <button onClick={() => setLundiModal(decalerSemaine(lundiModal, 1))} aria-label="Semaine suivante">
+                <ChevronRight size={16} color="#FFFFFF" />
+              </button>
+            </div>
+
+            <div className="planning-modal-grille">
+              {JOURS_ENUM.map((_, indexJour) => (
+                <div key={indexJour} className="planning-modal-jour-colonne">
+                  <span className="planning-modal-jour-label">{nomJour(indexJour).slice(0, 3)}</span>
+                  {MOMENTS.map((moment) => {
+                    const passe = creneauEstPasse(lundiModal, indexJour, moment);
+                    const creneau = trouverCreneauModal(indexJour, moment);
+
+                    let classe = 'planning-modal-case-libre';
+                    if (passe) classe = 'planning-modal-case-passe';
+                    else if (creneau) classe = 'planning-modal-case-occupee';
+
+                    return (
+                      <button
+                        key={moment}
+                        className={classe}
+                        disabled={passe}
+                        onClick={() => choisirCreneauModal(indexJour, moment)}
+                        title={creneau ? (creneau.recette ? creneau.recette.titre : creneau.platLibre) : ''}
+                      >
+                        {moment === 'midi' ? 'M' : 'S'}
+                      </button>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+
+            <div className="planning-modal-legende">
+              <span><span className="planning-modal-pastille planning-modal-pastille-verte" /> Libre</span>
+              <span><span className="planning-modal-pastille planning-modal-pastille-orange" /> Réservé</span>
+              <span><span className="planning-modal-pastille planning-modal-pastille-grise" /> Indisponible</span>
+            </div>
+
+            {erreurModal && <p className="message-erreur">{erreurModal}</p>}
+
+            <button className="planning-modal-annuler" onClick={() => setModalPlanningOuverte(false)}>
+              Annuler
+            </button>
+          </div>
+        </div>
+      )}
 
       {commentaireASupprimer && (
         <ModalSuppression
