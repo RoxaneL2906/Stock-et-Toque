@@ -69,3 +69,19 @@ export function basculerFavori(id) {
 export function listerMesFavoris() {
   return appelApi('/recettes/favoris', null, 'GET');
 }
+
+export function listerCommentaires(recetteId) {
+  return appelApi(`/recettes/${recetteId}/commentaires`, null, 'GET');
+}
+
+export function ajouterCommentaire(recetteId, contenu) {
+  return appelApi(`/recettes/${recetteId}/commentaires`, { contenu });
+}
+
+export function modifierCommentaire(commentaireId, contenu) {
+  return appelApi(`/commentaires/${commentaireId}`, { contenu }, 'PUT');
+}
+
+export function supprimerCommentaire(commentaireId) {
+  return appelApi(`/commentaires/${commentaireId}`, null, 'DELETE');
+}

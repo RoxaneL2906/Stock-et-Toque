@@ -160,3 +160,113 @@
   font-size: 14px;
   line-height: 1.4;
 }
+
+.recette-pub-commentaire-form {
+  width: 100%;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.recette-pub-commentaire-zone-texte {
+  position: relative;
+  width: 100%;
+}
+
+.recette-pub-commentaire-textarea {
+  width: 100%;
+  min-height: 70px;
+  background-color: #1B263D;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #FFFFFF;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.recette-pub-commentaire-textarea:focus {
+  outline: none;
+  border-color: var(--couleur-vert);
+}
+
+.recette-pub-commentaire-compteur-overlay {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  color: var(--couleur-texte-clair);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+.recette-pub-commentaire-form-bas {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 6px;
+  gap: 8px;
+}
+
+.recette-pub-commentaire-envoyer {
+  background-color: var(--couleur-vert);
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  color: #111827;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.recette-pub-commentaire-annuler {
+  background: none;
+  border: none;
+  color: var(--couleur-texte-clair);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.recette-pub-commentaires-liste {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.recette-pub-commentaire-carte {
+  background-color: #1B263D;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+
+.recette-pub-commentaire-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.recette-pub-commentaire-auteur {
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.recette-pub-commentaire-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.recette-pub-commentaire-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.recette-pub-commentaire-contenu {
+  color: var(--couleur-texte-clair);
+  font-size: 13px;
+  line-height: 1.4;
+}

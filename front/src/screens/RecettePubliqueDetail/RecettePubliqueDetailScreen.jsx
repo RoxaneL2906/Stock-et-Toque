@@ -1,10 +1,19 @@
 import { useState, useEffect } from 'react';
-import { Clock, ChefHat, Euro, Heart } from 'lucide-react';
+import { Clock, ChefHat, Euro, Heart, Trash2, Pencil } from 'lucide-react';
 import HeaderAppli from '../../components/HeaderAppli/HeaderAppli';
 import FooterNav from '../../components/FooterNav/FooterNav';
 import BoutonRetour from '../../components/BoutonRetour/BoutonRetour';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
-import { consulterRecettePublique, basculerFavori } from '../../services/recetteApi';
+import ModalSuppression from '../../components/ModalSuppression/ModalSuppression';
+import {
+  consulterRecettePublique,
+  basculerFavori,
+  listerCommentaires,
+  ajouterCommentaire,
+  modifierCommentaire,
+  supprimerCommentaire,
+} from '../../services/recetteApi';
+import { recupererProfil } from '../../services/profilApi';
 import photoDefaut from '../../assets/images/recetteDefaut.png';
 import './RecettePubliqueDetailScreen.css';
 
@@ -13,6 +22,14 @@ function RecettePubliqueDetailScreen({ recetteId, onNaviguer }) {
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState('');
   const [favoriEnCours, setFavoriEnCours] = useState(false);
+
+  const [monId, setMonId] = useState(null);
+  const [commentaires, setCommentaires] = useState([]);
+  const [nouveauCommentaire, setNouveauCommentaire] = useState('');
+  const [commentaireEnEdition, setCommentaireEnEdition] = useState(null);
+  const [texteEdition, setTexteEdition] = useState('');
+  const [commentaireASupprimer, setCommentaireASupprimer] = useState(null);
+  const [envoiEnCours, setEnvoiEnCours] = useState(false);
 
   useEffect(() => {
     consulterRecettePublique(recetteId)
@@ -24,7 +41,17 @@ function RecettePubliqueDetailScreen({ recetteId, onNaviguer }) {
         setErreur(err.message);
         setChargement(false);
       });
+
+    recupererProfil().then((profil) => setMonId(profil.id));
+
+    chargerCommentaires();
   }, [recetteId]);
+
+  const chargerCommentaires = () => {
+    listerCommentaires(recetteId)
+      .then(setCommentaires)
+      .catch(() => setCommentaires([]));
+  };
 
   const gererFavori = async () => {
     setFavoriEnCours(true);
@@ -36,6 +63,43 @@ function RecettePubliqueDetailScreen({ recetteId, onNaviguer }) {
     } finally {
       setFavoriEnCours(false);
     }
+  };
+
+  const gererAjoutCommentaire = async (e) => {
+    e.preventDefault();
+    if (nouveauCommentaire.trim() === '') return;
+
+    setEnvoiEnCours(true);
+    try {
+      await ajouterCommentaire(recetteId, nouveauCommentaire);
+      setNouveauCommentaire('');
+      chargerCommentaires();
+    } catch (err) {
+      setErreur(err.message);
+    } finally {
+      setEnvoiEnCours(false);
+    }
+  };
+
+  const commencerEdition = (commentaire) => {
+    setCommentaireEnEdition(commentaire.id);
+    setTexteEdition(commentaire.contenu);
+  };
+
+  const validerEdition = async (id) => {
+    try {
+      await modifierCommentaire(id, texteEdition);
+      setCommentaireEnEdition(null);
+      chargerCommentaires();
+    } catch (err) {
+      setErreur(err.message);
+    }
+  };
+
+  const confirmerSuppressionCommentaire = async () => {
+    await supprimerCommentaire(commentaireASupprimer);
+    setCommentaireASupprimer(null);
+    chargerCommentaires();
   };
 
   if (chargement) {
@@ -142,7 +206,88 @@ function RecettePubliqueDetailScreen({ recetteId, onNaviguer }) {
 
         <PrimaryButton texte="Vérifier mon stock" onClick={() => {}} />
 
+        <h3 className="recette-pub-section-titre">Commentaires ({commentaires.length})</h3>
+
+        <form onSubmit={gererAjoutCommentaire} className="recette-pub-commentaire-form">
+          <div className="recette-pub-commentaire-zone-texte">
+            <textarea
+              className="recette-pub-commentaire-textarea"
+              value={nouveauCommentaire}
+              onChange={(e) => setNouveauCommentaire(e.target.value.slice(0, 500))}
+              placeholder="Laissez un commentaire..."
+            />
+            <span className="recette-pub-commentaire-compteur-overlay">{nouveauCommentaire.length}/500</span>
+          </div>
+          <div className="recette-pub-commentaire-form-bas">
+            <button type="submit" className="recette-pub-commentaire-envoyer" disabled={envoiEnCours}>
+              Envoyer
+            </button>
+          </div>
+        </form>
+
+        <div className="recette-pub-commentaires-liste">
+          {commentaires.map((commentaire) => (
+            <div key={commentaire.id} className="recette-pub-commentaire-carte">
+              {commentaireEnEdition === commentaire.id ? (
+                <>
+                  <div className="recette-pub-commentaire-zone-texte">
+                    <textarea
+                      className="recette-pub-commentaire-textarea"
+                      value={texteEdition}
+                      onChange={(e) => setTexteEdition(e.target.value.slice(0, 500))}
+                    />
+                    <span className="recette-pub-commentaire-compteur-overlay">{texteEdition.length}/500</span>
+                  </div>
+                  <div className="recette-pub-commentaire-form-bas">
+                    <button
+                      type="button"
+                      className="recette-pub-commentaire-annuler"
+                      onClick={() => setCommentaireEnEdition(null)}
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      type="button"
+                      className="recette-pub-commentaire-envoyer"
+                      onClick={() => validerEdition(commentaire.id)}
+                    >
+                      Valider
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="recette-pub-commentaire-entete">
+                    <span className="recette-pub-commentaire-auteur">{commentaire.auteur}</span>
+                    {commentaire.auteurId === monId && (
+                      <div className="recette-pub-commentaire-actions">
+                        <button onClick={() => commencerEdition(commentaire)} aria-label="Modifier">
+                          <Pencil size={14} color="var(--couleur-orange)" />
+                        </button>
+                        <button onClick={() => setCommentaireASupprimer(commentaire.id)} aria-label="Supprimer">
+                          <Trash2 size={14} color="#EF4444" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <p className="recette-pub-commentaire-contenu">{commentaire.contenu}</p>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+
       </div>
+
+      {commentaireASupprimer && (
+        <ModalSuppression
+          titre="Supprimer ce commentaire ?"
+          description="Cette action est irréversible."
+          onConfirmer={confirmerSuppressionCommentaire}
+          onFermer={() => setCommentaireASupprimer(null)}
+        />
+      )}
+
       <FooterNav pageActive="recettes" onNaviguer={onNaviguer} />
     </div>
   );
