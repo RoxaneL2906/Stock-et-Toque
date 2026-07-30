@@ -12,7 +12,9 @@ import {
   ajouterCommentaire,
   modifierCommentaire,
   supprimerCommentaire,
+  comparerAvecStock,
 } from '../../services/recetteApi';
+import { ajouterArticleListe } from '../../services/listeCoursesApi';
 import { recupererProfil } from '../../services/profilApi';
 import { definirCreneau, consulterSemainePlanning } from '../../services/planningApi';
 import {
@@ -40,6 +42,13 @@ function RecettePubliqueDetailScreen({ recetteId, onNaviguer, creneauCible, onCr
   const [lundiModal, setLundiModal] = useState(obtenirLundiDeSemaine());
   const [creneauxModal, setCreneauxModal] = useState([]);
   const [erreurModal, setErreurModal] = useState('');
+
+  const [modalStockOuverte, setModalStockOuverte] = useState(false);
+  const [ingredientsManquants, setIngredientsManquants] = useState([]);
+  const [ingredientsCoches, setIngredientsCoches] = useState([]);
+  const [chargementStock, setChargementStock] = useState(false);
+  const [ajoutListeEnCours, setAjoutListeEnCours] = useState(false);
+  const [succesListe, setSuccesListe] = useState('');
 
   const [monId, setMonId] = useState(null);
   const [commentaires, setCommentaires] = useState([]);
@@ -132,6 +141,47 @@ function RecettePubliqueDetailScreen({ recetteId, onNaviguer, creneauCible, onCr
       setModalPlanningOuverte(false);
     } catch (err) {
       setErreurModal(err.message);
+    }
+  };
+
+  const gererVerifierStock = async () => {
+    setChargementStock(true);
+    setSuccesListe('');
+    setModalStockOuverte(true);
+    try {
+      const manquants = await comparerAvecStock(recetteId);
+      setIngredientsManquants(manquants);
+      setIngredientsCoches(manquants.map((_, index) => index));
+    } catch (err) {
+      setErreur(err.message);
+    } finally {
+      setChargementStock(false);
+    }
+  };
+
+  const basculerIngredientCoche = (index) => {
+    setIngredientsCoches((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+    );
+  };
+
+  const confirmerAjoutListeCourses = async () => {
+    setAjoutListeEnCours(true);
+    try {
+      for (const index of ingredientsCoches) {
+        const ingredient = ingredientsManquants[index];
+        await ajouterArticleListe({
+          nom: ingredient.nom,
+          quantite: Math.ceil(ingredient.quantite),
+          categorieAchat: 'autre',
+        });
+      }
+      setSuccesListe('Ingrédients ajoutés à votre liste de courses.');
+      setTimeout(() => setModalStockOuverte(false), 1200);
+    } catch (err) {
+      setErreur(err.message);
+    } finally {
+      setAjoutListeEnCours(false);
     }
   };
 
@@ -275,7 +325,7 @@ function RecettePubliqueDetailScreen({ recetteId, onNaviguer, creneauCible, onCr
         </div>
 
         <div className="recette-pub-boutons-action">
-          <button className="recette-pub-bouton-planning" onClick={() => {}}>
+          <button className="recette-pub-bouton-planning" onClick={gererVerifierStock}>
             Vérifier mon stock
           </button>
           <PrimaryButton
@@ -371,6 +421,56 @@ function RecettePubliqueDetailScreen({ recetteId, onNaviguer, creneauCible, onCr
         </div>
 
       </div>
+
+      {modalStockOuverte && (
+        <div className="planning-modal-overlay">
+          <div className="planning-modal-fond" onClick={() => setModalStockOuverte(false)} />
+          <div className="planning-modal-carte">
+            <h3 className="planning-modal-titre">Vérifier mon stock</h3>
+
+            {chargementStock ? (
+              <p style={{ color: '#fff', textAlign: 'center' }}>Vérification...</p>
+            ) : ingredientsManquants.length === 0 ? (
+              <p style={{ color: 'var(--couleur-vert)', textAlign: 'center' }}>
+                Vous avez déjà tout en stock ! 
+              </p>
+            ) : (
+              <>
+                <p className="recette-pub-stock-info">Ingrédients manquants ou insuffisants :</p>
+                <div className="recette-pub-stock-liste">
+                  {ingredientsManquants.map((ingredient, index) => (
+                    <label key={index} className="recette-pub-stock-ligne">
+                      <input
+                        type="checkbox"
+                        checked={ingredientsCoches.includes(index)}
+                        onChange={() => basculerIngredientCoche(index)}
+                        className="recette-detail-checkbox"
+                      />
+                      <span>
+                        {ingredient.nom} - {Math.ceil(ingredient.quantite)}{ingredient.unite ? ` ${ingredient.unite}` : ''}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+
+                {succesListe && <p className="message-succes">{succesListe}</p>}
+
+                <button
+                  className="planning-modal-option planning-modal-valider"
+                  onClick={confirmerAjoutListeCourses}
+                  disabled={ajoutListeEnCours || ingredientsCoches.length === 0}
+                >
+                  {ajoutListeEnCours ? 'Ajout...' : 'Ajouter à la liste de courses'}
+                </button>
+              </>
+            )}
+
+            <button className="planning-modal-annuler" onClick={() => setModalStockOuverte(false)}>
+              Fermer
+            </button>
+          </div>
+        </div>
+      )}
 
       {modalPlanningOuverte && (
         <div className="planning-modal-overlay">

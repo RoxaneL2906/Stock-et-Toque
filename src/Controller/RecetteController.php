@@ -261,4 +261,21 @@ class RecetteController extends AbstractController
 
         return new JsonResponse($resultat, 200);
     }
+
+    /**
+     * Comparaison des ingrédients d'une recette avec le stock de l'utilisateur 
+     */
+    #[Route('/api/recettes/{id}/comparer-stock', name: 'api_recettes_comparer_stock', methods: ['GET'])]
+    public function comparerAvecStock(int $id): JsonResponse
+    {
+        $utilisateur = $this->getUser();
+
+        try {
+            $manquants = $this->recetteService->comparerAvecStock($utilisateur, $id);
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 404);
+        }
+
+        return new JsonResponse($manquants, 200);
+    }
 }
