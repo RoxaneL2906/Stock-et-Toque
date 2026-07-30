@@ -21,10 +21,12 @@ import RecettesPubliquesScreen from './screens/RecettesPubliques/RecettesPubliqu
 import RecettePubliqueDetailScreen from './screens/RecettePubliqueDetail/RecettePubliqueDetailScreen';
 import MesFavorisScreen from './screens/MesFavoris/MesFavorisScreen';
 import AccueilConnecteScreen from './screens/AccueilConnecte/AccueilConnecteScreen';
+import PlanningScreen from './screens/Planning/PlanningScreen';
 
 function App() {
   const [ecranActuel, setEcranActuel] = useState('accueil');
   const [recetteSelectionneeId, setRecetteSelectionneeId] = useState(null);
+  const [creneauCible, setCreneauCible] = useState(null);
 
   useEffect(() => {
     const parametres = new URLSearchParams(window.location.search);
@@ -49,6 +51,11 @@ function App() {
     setEcranActuel('recettePublique');
   };
 
+  const naviguerVersChoixRecette = (cible) => {
+    setCreneauCible(cible);
+    setEcranActuel('recettes');
+  };
+
   return (
     <>
       {ecranActuel === 'accueil' && <AccueilScreen onNaviguer={setEcranActuel} />}
@@ -57,7 +64,9 @@ function App() {
       {ecranActuel === 'motDePasseOublie' && <MotDePasseOublieScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'emailEnvoye' && <EmailEnvoyeScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'reinitialiserMotDePasse' && <ReinitialiserMotDePasseScreen onNaviguer={setEcranActuel} />}
-      {ecranActuel === 'accueilConnecte' && <AccueilConnecteScreen onNaviguer={setEcranActuel} />}
+      {ecranActuel === 'accueilConnecte' && (
+        <AccueilConnecteScreen onNaviguer={setEcranActuel} onNaviguerVersRecettePublique={naviguerVersRecettePublique} />
+      )}
       {ecranActuel === 'profil' && <ProfilScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'modifierInfos' && <ModifierInfosScreen onNaviguer={setEcranActuel} />}
       {ecranActuel === 'changerMotDePasse' && <ChangerMotDePasseScreen onNaviguer={setEcranActuel} />}
@@ -86,10 +95,25 @@ function App() {
         />
       )}
       {ecranActuel === 'recettePublique' && (
-        <RecettePubliqueDetailScreen recetteId={recetteSelectionneeId} onNaviguer={setEcranActuel} />
+        <RecettePubliqueDetailScreen
+          recetteId={recetteSelectionneeId}
+          onNaviguer={setEcranActuel}
+          creneauCible={creneauCible}
+          onCreneauAjoute={() => {
+            setCreneauCible(null);
+            setEcranActuel('planning');
+          }}
+        />
       )}
       {ecranActuel === 'mesFavoris' && (
         <MesFavorisScreen onNaviguer={setEcranActuel} onNaviguerVersRecettePublique={naviguerVersRecettePublique} />
+      )}
+      {ecranActuel === 'planning' && (
+        <PlanningScreen
+          onNaviguer={setEcranActuel}
+          onNaviguerVersChoixRecette={naviguerVersChoixRecette}
+          onNaviguerVersRecettePublique={naviguerVersRecettePublique}
+        />
       )}
     </>
   );
