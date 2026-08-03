@@ -39,4 +39,28 @@ class PlanningServiceTest extends KernelTestCase
 
         $this->assertFalse($estPasse, "Un créneau situé en janvier 2030 ne doit pas être considéré comme passé.");
     }
+
+    public function testCreneauMidiAujourdhuiAvant14hNestPasEncorePasse(): void
+    {
+        // On simule "aujourd'hui" comme le lundi de la semaine actuelle
+        $lundiActuel = new \DateTime('monday this week');
+        $estPasse = $this->planningService->creneauEstPasse($lundiActuel, JourSemaineEnum::LUNDI, MomentEnum::MIDI);
+
+        // Ce test peut varier selon l'heure d'exécution réelle : avant 14h, le créneau midi n'est pas encore passé
+        $heureActuelle = (int) date('H');
+        if ($heureActuelle < 14) {
+            $this->assertFalse($estPasse, "Avant 14h, le créneau midi d'aujourd'hui ne doit pas être considéré comme passé.");
+        } else {
+            $this->assertTrue($estPasse, "Après 14h, le créneau midi d'aujourd'hui doit être considéré comme passé.");
+        }
+    }
+
+    public function testCreneauSemaineProchaineNestJamaisPasse(): void
+    {
+        // Un créneau la semaine prochaine ne doit jamais être considéré comme passé, quel que soit le jour actuel
+        $lundiProchain = new \DateTime('monday next week');
+        $estPasse = $this->planningService->creneauEstPasse($lundiProchain, JourSemaineEnum::LUNDI, MomentEnum::MIDI);
+
+        $this->assertFalse($estPasse, "Un créneau la semaine prochaine ne doit jamais être considéré comme passé.");
+    }
 }
