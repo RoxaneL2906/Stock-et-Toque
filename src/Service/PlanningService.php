@@ -159,7 +159,7 @@ class PlanningService
     /**
      * Vérifie si un créneau (jour + moment d'une semaine donnée) est déjà passé par rapport à maintenant.
      */
-    private function creneauEstPasse(\DateTimeInterface $semaineDebut, JourSemaineEnum $jour, MomentEnum $moment): bool
+    public function creneauEstPasse(\DateTimeInterface $semaineDebut, JourSemaineEnum $jour, MomentEnum $moment): bool
     {
         $indexJour = array_search($jour, JourSemaineEnum::cases());
         $dateJour = \DateTime::createFromInterface($semaineDebut);
