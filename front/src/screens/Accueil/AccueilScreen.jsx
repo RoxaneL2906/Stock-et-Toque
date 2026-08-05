@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { Helmet } from 'react-helmet-async';
 import Header from '../../components/Header/Header';
 import FeatureCard from '../../components/FeatureCard/FeatureCard';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
@@ -17,6 +18,15 @@ function AccueilScreen({ onNaviguer }) {
 
   return (
     <div className="ecran-complet">
+      <Helmet>
+        <title>Stock & Toque - Gérez votre stock et vos recettes</title>
+        <meta
+          name="description"
+          content="Stock & Toque permet de gérer son stock de produits, 
+          planifier ses repas, organiser ses courses et 
+          accéder à des recettes filtrées selon ses préférences alimentaires."
+        />
+      </Helmet>
       <Header />
       <div className="ecran-contenu">
         <p className="accueil-description">
@@ -24,19 +34,16 @@ function AccueilScreen({ onNaviguer }) {
           planifier ses repas, organiser ses courses et accéder à des recettes
           filtrées selon ses préférences, son régime alimentaire et ses allergies.
         </p>
-
         <div className="accueil-boutons-colonne">
           <PrimaryButton texte="Se connecter →" onClick={() => onNaviguer('connexion')} />
           <PrimaryButton texte="En savoir plus ↓" onClick={allerAuxFonctionnalites} />
         </div>
-
         <div className="accueil-cards-grid" ref={fonctionnalitesRef}>
           <FeatureCard icone={iconeRecettes} titre="Recettes" description={'Privées & publiques\nFiltrées par préférences'} couleur="#22C55E" />
           <FeatureCard icone={iconePlanning} titre="Planning" description={'7 jours, midi & soir\nSuggestions'} couleur="#F97316" />
           <FeatureCard icone={iconeStock} titre="Stock" description={'Frigo & Placard\nAlertes DLC/DDM'} couleur="#60A5FA" />
           <FeatureCard icone={iconeCourses} titre="Courses" description={'Manuelle ou auto\nDepuis les recettes'} couleur="#A78BFA" />
         </div>
-
         <PrimaryButton texte="S'inscrire →" onClick={() => onNaviguer('inscription')} />
       </div>
     </div>
