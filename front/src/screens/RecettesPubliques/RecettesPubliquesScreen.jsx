@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Plus, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, Plus, ChevronDown, ChevronUp, BookMarked, Heart } from 'lucide-react';
 import HeaderAppli from '../../components/HeaderAppli/HeaderAppli';
 import FooterNav from '../../components/FooterNav/FooterNav';
 import CarteRecette from '../../components/CarteRecette/CarteRecette';
@@ -137,10 +137,12 @@ function RecettesPubliquesScreen({ onNaviguer, onNaviguerVersRecettePublique }) 
 
         <div className="recettes-pub-raccourcis">
           <button className="recettes-pub-raccourci" onClick={() => onNaviguer('mesRecettes')}>
-            Mes recettes
+            <BookMarked size={18} color="#22C55E" />
+            <span>Mes recettes</span>
           </button>
           <button className="recettes-pub-raccourci" onClick={() => onNaviguer('mesFavoris')}>
-            Mes favoris
+            <Heart size={18} color="#EF4444" />
+            <span>Mes favoris</span>
           </button>
         </div>
 

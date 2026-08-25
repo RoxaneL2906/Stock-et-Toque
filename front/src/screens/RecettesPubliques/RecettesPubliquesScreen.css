@@ -128,13 +128,16 @@
 
 .recettes-pub-raccourci {
   flex: 1;
-  background-color: #1B263D;
-  border: 1px solid #374151;
+  background-color: #1F2937;
+  border: none;
   border-radius: 8px;
-  padding: 14px;
+  padding: 16px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
   color: #FFFFFF;
   font-size: 13px;
-  font-weight: bold;
   cursor: pointer;
 }
 
