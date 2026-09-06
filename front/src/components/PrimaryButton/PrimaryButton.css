@@ -1,0 +1,15 @@
+.primary-button {
+  background-color: var(--couleur-vert);
+  border: none;
+  border-radius: 20px;
+  padding: 12px 20px;
+  color: #000000;
+  font-weight: bold;
+  font-size: 14px;
+  width: 220px;
+  cursor: pointer;
+}
+
+.primary-button:hover {
+  opacity: 0.9;
+}

@@ -1,0 +1,153 @@
+.courses-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 12px;
+  margin-bottom: 20px;
+}
+
+.courses-titre {
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.courses-bouton-ajout {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #D9D9D9;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.courses-categorie {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.courses-categorie-titre {
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.courses-article {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #1F2937;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.courses-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--couleur-vert);
+  flex-shrink: 0;
+}
+
+.courses-article-photo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.courses-article-photo-defaut {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #374151;
+  flex-shrink: 0;
+}
+
+.courses-article-nom {
+  flex: 1;
+  color: #FFFFFF;
+  font-size: 14px;
+}
+
+.courses-article-quantite {
+  color: var(--couleur-texte-clair);
+  font-size: 13px;
+}
+
+.courses-article-coche .courses-article-nom,
+.courses-article-coche .courses-article-quantite {
+  text-decoration: line-through;
+  color: var(--couleur-texte-clair);
+}
+
+.courses-bouton-archiver-zone {
+  margin-top: 12px;
+}
+
+.courses-confirmation-archivage {
+  background-color: #1F2937;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.courses-confirmation-texte {
+  color: #FFFFFF;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.courses-confirmation-boutons {
+  display: flex;
+  gap: 10px;
+}
+
+.courses-confirmation-non,
+.courses-confirmation-oui {
+  flex: 1;
+  padding: 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.courses-confirmation-non {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid #374151;
+  color: #FFFFFF;
+}
+
+.courses-confirmation-oui {
+  background-color: var(--couleur-vert);
+  border: none;
+  color: #111827;
+}
+
+.courses-article-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  cursor: pointer;
+}
+
+.courses-article-supprimer {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  flex-shrink: 0;
+}

@@ -1,0 +1,30 @@
+.feature-card {
+  background-color: var(--couleur-carte);
+  border-radius: 8px;
+  padding: 14px;
+  width: 48%;
+  min-height: 110px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.feature-card-icone {
+  width: 28px;
+  height: 28px;
+  margin-bottom: 6px;
+}
+
+.feature-card-titre {
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.feature-card-description {
+  font-size: 11px;
+  color: var(--couleur-texte-clair);
+  white-space: pre-line;
+}

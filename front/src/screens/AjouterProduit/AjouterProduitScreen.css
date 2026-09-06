@@ -1,0 +1,177 @@
+.ajout-barre-recherche {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #1F2937;
+  border-radius: 999px;
+  padding: 10px 16px;
+  margin-top: 12px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.ajout-barre-recherche input {
+  background: none;
+  border: none;
+  outline: none;
+  color: #FFFFFF;
+  font-size: 14px;
+  flex: 1;
+}
+
+.ajout-resultats-recherche {
+  width: 100%;
+  background-color: #1F2937;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.ajout-recherche-info {
+  color: var(--couleur-texte-clair);
+  font-size: 13px;
+  padding: 12px 16px;
+}
+
+.ajout-resultat-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #374151;
+  padding: 10px 16px;
+  cursor: pointer;
+  color: #FFFFFF;
+  font-size: 13px;
+  text-align: left;
+}
+
+.ajout-resultat-item:last-child {
+  border-bottom: none;
+}
+
+.ajout-resultat-photo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.ajout-resultat-photo-defaut {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #374151;
+  flex-shrink: 0;
+}
+
+.ajout-titre {
+  color: #FFFFFF;
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.ajout-formulaire {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.ajout-champ {
+  width: 100%;
+}
+
+.ajout-boutons-choix {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.ajout-choix,
+.ajout-choix-actif {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+}
+
+.ajout-choix {
+  background-color: #1B263D;
+  border: 1px solid #374151;
+  color: var(--couleur-texte-clair);
+}
+
+.ajout-choix-actif {
+  background-color: var(--couleur-vert);
+  border: 1px solid var(--couleur-vert);
+  color: #111827;
+}
+
+.ajout-quantite-controle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #1B263D;
+  border: 1px solid #374151;
+  border-radius: 999px;
+  padding: 8px 16px;
+  width: fit-content;
+  margin-top: 6px;
+}
+
+.ajout-quantite-controle button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.ajout-quantite-controle span {
+  color: #FFFFFF;
+  font-weight: bold;
+  min-width: 20px;
+  text-align: center;
+}
+
+.ajout-date-conteneur {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #1B263D;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 6px;
+}
+
+.ajout-date-input {
+  background: none;
+  border: none;
+  outline: none;
+  color: #FFFFFF;
+  font-size: 14px;
+  flex: 1;
+  color-scheme: dark;
+}
+
+.message-erreur {
+  color: #EF4444;
+  font-size: 13px;
+  text-align: center;
+}
+
+.message-succes {
+  color: var(--couleur-vert);
+  font-size: 13px;
+  text-align: center;
+}

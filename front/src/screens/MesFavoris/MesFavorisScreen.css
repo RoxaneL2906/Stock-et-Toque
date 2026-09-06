@@ -1,0 +1,28 @@
+.mes-favoris-titre {
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 12px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.mes-favoris-barre-recherche {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #1F2937;
+  border-radius: 999px;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.mes-favoris-barre-recherche input {
+  background: none;
+  border: none;
+  outline: none;
+  color: #FFFFFF;
+  font-size: 14px;
+  flex: 1;
+}
