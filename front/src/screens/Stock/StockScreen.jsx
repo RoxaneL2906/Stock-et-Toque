@@ -137,9 +137,9 @@ function StockScreen({ onNaviguer }) {
               <div className="stock-section">
                 <div className="stock-section-entete">
                   <h2 className="stock-section-titre">À consommer bientôt</h2>
-                  <span className="stock-voir-tout" onClick={() => onNaviguer('stockBientot')}>
+                  {/* <span className="stock-voir-tout" onClick={() => onNaviguer('stock')}>
                     Voir tout →
-                  </span>
+                  </span> */}
                 </div>
                 {produitsBientot.map((produit) => (
                   <CarteProduitStock

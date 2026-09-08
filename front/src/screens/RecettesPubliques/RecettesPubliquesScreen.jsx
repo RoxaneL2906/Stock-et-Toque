@@ -50,6 +50,7 @@ function RecettesPubliquesScreen({ onNaviguer, onNaviguerVersRecettePublique }) 
   // On pioche parmi les résultats existants pour "la vitrine visuelle".
   const suggestionDuJour = recettes.length > 0 ? recettes[0] : null;
   const communauteAdore = recettes.slice(1, 4);
+  const plusDeRecettes = recettes.slice(4);
 
   if (erreur) {
     return <p style={{ color: '#EF4444' }}>{erreur}</p>;
@@ -164,6 +165,19 @@ function RecettesPubliquesScreen({ onNaviguer, onNaviguerVersRecettePublique }) 
               <>
                 <h3 className="recettes-pub-section-titre">La communauté adore</h3>
                 {communauteAdore.map((recette) => (
+                  <CarteRecette
+                    key={recette.id}
+                    recette={recette}
+                    onClick={() => onNaviguerVersRecettePublique(recette.id)}
+                  />
+                ))}
+              </>
+            )}
+
+            {plusDeRecettes.length > 0 && (
+              <>
+                <h3 className="recettes-pub-section-titre">Plus de recettes</h3>
+                {plusDeRecettes.map((recette) => (
                   <CarteRecette
                     key={recette.id}
                     recette={recette}

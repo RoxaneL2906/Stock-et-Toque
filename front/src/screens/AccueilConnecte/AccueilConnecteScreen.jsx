@@ -169,7 +169,7 @@ function AccueilConnecteScreen({ onNaviguer, onNaviguerVersRecettePublique }) {
         )}
 
       </div>
-      <FooterNav pageActive="accueil" onNaviguer={onNaviguer} />
+      <FooterNav pageActive="accueilConnecte" onNaviguer={onNaviguer} />
     </div>
   );
 }
